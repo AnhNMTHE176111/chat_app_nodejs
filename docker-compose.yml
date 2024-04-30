@@ -1,0 +1,37 @@
+version: "3.0"
+
+services:
+    # Node Service:
+    chat_app:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        container_name: chat_app
+        tty: true
+        restart: unless-stopped
+        volumes:
+            - ./:/home/app
+        networks:
+            - chat_app_network
+
+    # Nginx Service:
+    chat_app_nginx:
+        image: nginx:1.25.4
+        container_name: chat_app_nginx
+        tty: true
+        restart: unless-stopped
+        ports:
+            - "8000:80"
+            - "443:443"
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+        networks:
+            - chat_app_network
+        depends_on:
+            - chat_app
+              # condition: service_healthy
+
+networks:
+    chat_app_network:
+        driver: bridge
