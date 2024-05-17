@@ -4,10 +4,10 @@ WORKDIR /home/app
 
 COPY package*.json ./
 
-RUN npm install && npm install -g nodemon
+RUN npm install && npm install -g nodemon typescript
 
 COPY . .
 
 EXPOSE 3000
 
-ENTRYPOINT [ "npx", "nodemon", "--legacy-watch", "--delay", "2000ms", "start" ]
+ENTRYPOINT [ "npx", "nodemon", "--exitcrash ", "--legacy-watch", "--delay", "2000ms", "start" ]
