@@ -8,24 +8,27 @@ const cors = require("cors");
 const indexRouter = require("./api/v1/routes/index");
 const connectToMongoDB = require("./config/database.config.js");
 const { ResponseHelper } = require("./api/v1/helpers/response.helper.js");
-const { API_VERSION, CLIENT_URL } = require("./api/v1/helpers/const.js");
+const {
+    API_VERSION,
+    CLIENT_URL,
+    COOKIE_SECRET,
+} = require("./api/v1/helpers/const.js");
 const { initializeApp } = require("firebase/app");
 const { firebaseConfig } = require("./config/firebase.config.js");
 
-initializeApp(firebaseConfig);
-
 const app = express();
 
+initializeApp(firebaseConfig);
 app.use(
     cors({
         origin: [CLIENT_URL],
+        credentials: true,
     })
 );
-
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser(COOKIE_SECRET));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(ResponseHelper);
 

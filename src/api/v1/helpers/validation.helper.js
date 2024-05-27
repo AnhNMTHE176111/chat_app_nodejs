@@ -11,6 +11,17 @@ const isSame = (
     return true;
 };
 
+const isDifferent = (
+    firstValue,
+    secondValue,
+    errorMessage = `First Value must be different from Second Value`
+) => {
+    if (firstValue == secondValue) {
+        throw new Error(errorMessage);
+    }
+    return true;
+};
+
 const isPastDeadline = (
     targetTime,
     errorMessage = "The deadline has passed."
@@ -124,4 +135,5 @@ module.exports = {
     maxLengthString,
     minNumber,
     maxNumber,
+    isDifferent,
 };

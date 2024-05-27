@@ -1,8 +1,10 @@
+const express = require("express");
 const bcrypt = require("bcrypt");
 const User = require("../../models/user.model");
 const {
     SALT_ROUNDS,
     PASSWORD_RESET_TOKEN_TIME_TO_LIVE_MINUTES,
+    CLIENT_URL,
 } = require("../../helpers/const");
 const crypto = require("crypto");
 const moment = require("moment");
@@ -17,7 +19,9 @@ const {
     sendResetPasswordTokenMail,
 } = require("../../services/sendResetPasswordTokenMail.service");
 
-const register = async (req, res) => {
+const AuthController = express.Router();
+
+AuthController.register = async (req, res) => {
     const { email, password, fullName, username } = req.body;
     try {
         const hashPassword = bcrypt.hashSync(password.toString(), SALT_ROUNDS);
@@ -41,7 +45,7 @@ const register = async (req, res) => {
     }
 };
 
-const verifyEmail = async (req, res) => {
+AuthController.verifyEmail = async (req, res) => {
     const user = req.user;
     try {
         user.verificationToken = null;
@@ -57,7 +61,7 @@ const verifyEmail = async (req, res) => {
     }
 };
 
-const resendActivationEmail = async (req, res) => {
+AuthController.resendActivationEmail = async (req, res) => {
     const user = req.user;
     try {
         const emailToken = crypto.randomBytes(64).toString("hex");
@@ -73,26 +77,30 @@ const resendActivationEmail = async (req, res) => {
     }
 };
 
-const login = async (req, res) => {
+AuthController.login = async (req, res) => {
     const user = req.user;
     try {
-        setUserAccessToken(user);
+        setUserAccessToken(user, res);
         setUserRefreshToken(user);
         await user.save();
+        if (req.body.remember_me) {
+        }
         const dataResponse = {
             username: user.username,
             email: user.email,
             fullName: user.fullName,
+            role: user.role,
             accessToken: user.accessToken,
             tokenExpireAt: user.tokenExpireAt,
         };
         return res.sendSuccess(dataResponse, "Login successfully!");
     } catch (error) {
+        console.log("BE error", error);
         return res.sendError(error?.errorResponse || error);
     }
 };
 
-const forgotPassword = async (req, res) => {
+AuthController.forgotPassword = async (req, res) => {
     const user = req.user;
     try {
         const passwordResetToken = crypto.randomBytes(64).toString("hex");
@@ -112,7 +120,7 @@ const forgotPassword = async (req, res) => {
     }
 };
 
-const resetPassword = async (req, res) => {
+AuthController.resetPassword = async (req, res) => {
     const user = req.user;
     const new_password = req.new_password;
     try {
@@ -130,14 +138,23 @@ const resetPassword = async (req, res) => {
     }
 };
 
-const resfreshToken = (req, res) => {};
 
-module.exports = {
-    register,
-    login,
-    verifyEmail,
-    resendActivationEmail,
-    forgotPassword,
-    resetPassword,
-    resfreshToken,
+AuthController.currentUser = async (req, res) => {
+    const user = req.user;
+    return res.sendSuccess({
+        user: {
+            username: user.username,
+            email: user.email,
+            fullName: user.fullName,
+            accessToken: user.accessToken,
+            tokenExpireAt: user.tokenExpireAt,
+            role: user.role,
+        },
+    });
 };
+
+AuthController.resfreshToken = async (req, res) => {};
+AuthController.logout = async (req, res) => {};
+AuthController.updateProfile = async (req, res) => {};
+
+module.exports = AuthController;

@@ -1,3 +1,4 @@
+const express = require("express");
 const {
     isSame,
     emailRule,
@@ -5,11 +6,14 @@ const {
     usernameRule,
     passwordRule,
     isPastDeadline,
+    isDifferent,
 } = require("../helpers/validation.helper");
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 
-const registerRequest = async (req, res, next) => {
+const AuthRequest = express.Router();
+
+AuthRequest.registerRequest = async (req, res, next) => {
     const { email, password, password_confirmation, fullName, username } =
         req.body;
     try {
@@ -29,15 +33,15 @@ const registerRequest = async (req, res, next) => {
         const user = await User.findOne({
             $or: [{ email }, { username }],
         });
-        isSame(email, user.email, "Email is taken.");
-        isSame(username, user.username, "Username is taken.");
+        isDifferent(email, user?.email, "Email is taken.");
+        isDifferent(username, user?.username, "Username is taken.");
     } catch (error) {
         return res.sendError(error.message);
     }
     next();
 };
 
-const loginRequest = async (req, res, next) => {
+AuthRequest.loginRequest = async (req, res, next) => {
     const { email, password } = req.body;
     try {
         requiredRule(email, "Email");
@@ -56,7 +60,7 @@ const loginRequest = async (req, res, next) => {
     next();
 };
 
-const verifyEmailRequest = async (req, res, next) => {
+AuthRequest.verifyEmailRequest = async (req, res, next) => {
     const { emailToken } = req.body;
     if (!emailToken) {
         return res.sendError("Email Token Not Found...", 404);
@@ -79,7 +83,7 @@ const verifyEmailRequest = async (req, res, next) => {
     next();
 };
 
-const forgotPasswordRequest = async (req, res, next) => {
+AuthRequest.forgotPasswordRequest = async (req, res, next) => {
     const { email } = req.body;
     try {
         requiredRule(email, "Email");
@@ -91,7 +95,7 @@ const forgotPasswordRequest = async (req, res, next) => {
     next();
 };
 
-const resetPasswordRequest = async (req, res, next) => {
+AuthRequest.resetPasswordRequest = async (req, res, next) => {
     const {
         email,
         new_password,
@@ -128,7 +132,7 @@ const resetPasswordRequest = async (req, res, next) => {
     next();
 };
 
-const sendActivationRequest = async (req, res, next) => {
+AuthRequest.sendActivationRequest = async (req, res, next) => {
     const { email } = req.body;
     try {
         requiredRule(email, "Email");
@@ -143,11 +147,18 @@ const sendActivationRequest = async (req, res, next) => {
     next();
 };
 
-module.exports = {
-    registerRequest,
-    loginRequest,
-    verifyEmailRequest,
-    forgotPasswordRequest,
-    resetPasswordRequest,
-    sendActivationRequest,
+AuthRequest.currentUserRequest = async (req, res, next) => {
+    const userId = req.userId;
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.sendError("Not found User", 404);
+        }
+        req.user = user;
+    } catch (error) {
+        return res.sendError(error?.message);
+    }
+    next();
 };
+
+module.exports = AuthRequest;
