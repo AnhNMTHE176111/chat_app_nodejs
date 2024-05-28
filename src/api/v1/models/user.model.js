@@ -1,55 +1,90 @@
 const { default: mongoose } = require("mongoose");
 
-const UserSchema = new mongoose.Schema({
-    email: {
+const friendSchema = new mongoose.Schema({
+    friend_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
+    status: {
         type: String,
-        required: true,
-        unique: true,
-        match: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g,
+        trim: true,
+        enum: ["accept", "reject", "pending"],
+        default: "pending",
     },
-    phone: {
-        type: String,
-        required: false,
-        match: /(84|0[3|5|7|8|9])+([0-9]{8})\b/g,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    firstName: {
-        type: String,
-        required: true,
-    },
-    lastName: {
-        type: String,
-        required: true,
-    },
-    middleName: {
-        type: String,
-        required: fasle,
-    },
-    isActive: {
-        type: Boolean,
-        default: false,
-    },
-    isReported: {
-        type: Boolean,
-        default: false,
-    },
-    isBlocked: {
-        type: Boolean,
-        default: false,
-    },
-    avatar: {
-        type: String,
-    },
-    friends: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-        },
-    ],
 });
+
+const UserSchema = new mongoose.Schema(
+    {
+        email: {
+            type: String,
+            trim: true,
+            required: true,
+            maxLength: 32,
+            unique: true,
+            match: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+            index: true,
+        },
+        friends: [friendSchema],
+        password: {
+            type: String,
+            trim: true,
+            required: true,
+        },
+        role: {
+            type: String,
+            trim: true,
+            enum: ["admin", "normal"],
+            default: "normal",
+        },
+        username: {
+            type: String,
+            trim: true,
+            maxLength: 32,
+            unique: true,
+            match: /^[a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){3,18}[a-zA-Z0-9]$/,
+            required: true,
+            index: true,
+        },
+        fullName: {
+            type: String,
+            trim: true,
+            maxLength: 64,
+        },
+        lastOnline: {
+            type: Date,
+        },
+        isOnline: {
+            type: Boolean,
+            default: false,
+        },
+        avatar: {
+            type: String,
+            trim: true,
+        },
+
+        /** Acitvation Email */
+        verificationToken: String,
+        verificationStatus: {
+            type: Boolean,
+            default: false,
+        },
+
+        /** Reset Password Token */
+        passwordResetToken: String,
+        passwordResetExpires: Date,
+    },
+    {
+        timestamps: true,
+    }
+);
+
+UserSchema.statics.findOneByEmail = async function ({ email }) {
+    const user = await this.findOne({ email });
+    if (!user) {
+        throw new Error("Email has not been registered!");
+    }
+    return user;
+};
 
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
