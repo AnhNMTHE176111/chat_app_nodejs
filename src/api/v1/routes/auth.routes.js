@@ -29,13 +29,13 @@ router.post(
 );
 
 /** Route need to be authenticated  */
-router.use(AuthorizationMiddleware.verifyJWT);
+router.use(AuthorizationMiddleware.verifyJWT, AuthRequest.currentUserRequest);
 router.get(
     "/current-user",
-    AuthRequest.currentUserRequest,
     AuthController.currentUser
 );
-router.post("/logout");
+router.post("/logout", AuthController.logout);
+router.post("/token", AuthRequest.tokenRequest, AuthController.token);
 router.put("/update-profile");
 
 module.exports = router;

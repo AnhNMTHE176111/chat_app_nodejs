@@ -10,6 +10,9 @@ const {
 } = require("../helpers/validation.helper");
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { redisClient } = require("../../../config");
+const { JWT_SECRET } = require("../helpers/const");
 
 const AuthRequest = express.Router();
 
@@ -159,6 +162,27 @@ AuthRequest.currentUserRequest = async (req, res, next) => {
         return res.sendError(error?.message);
     }
     next();
+};
+
+AuthRequest.tokenRequest = async (req, res, next) => {
+    const user = req.user;
+    try {
+        const refreshToken = await redisClient.hget(user._id, "refresh_token");
+        if (!refreshToken) {
+            return res.sendError("Refresh token is missing.", 401);
+        }
+        jwt.verify(refreshToken, JWT_SECRET, (err, decoded) => {
+            if (err) {
+                return res.sendError(err.message);
+            }
+            if(decoded.userId != req.userId) {
+                return res.sendError("Invalid refresh token for the user", 403);
+            }
+        });
+        next();
+    } catch (error) {
+        return res.sendError(error?.message);
+    }
 };
 
 module.exports = AuthRequest;

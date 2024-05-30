@@ -1,12 +1,13 @@
 const moment = require("moment-timezone");
 const jwt = require("jsonwebtoken");
-const { JWT_TTL, JWT_REFRESH_TTL, CLIENT_URL } = require("../helpers/const");
+const { JWT_TTL, JWT_REFRESH_TTL, JWT_SECRET } = require("../helpers/const");
+const { redisClient, cookieOption } = require("../../../config");
 
-const createToken = (value, timeToLive) => {
-    const jwtSecretKey = process.env.JWT_SECRET;
+const createToken = (payload, timeToLive) => {
+    const jwtSecretKey = JWT_SECRET;
     const tokenExpireAt = moment().add(timeToLive, "seconds");
-    const token = jwt.sign({ value }, jwtSecretKey, {
-        expiresIn: '1d',
+    const token = jwt.sign(payload, jwtSecretKey, {
+        expiresIn: `${timeToLive}s`,
     });
     return {
         token: token,
@@ -15,22 +16,28 @@ const createToken = (value, timeToLive) => {
 };
 
 const setUserAccessToken = (user, res) => {
-    const accessToken = createToken(user._id, JWT_TTL);
+    const accessToken = createToken({ userId: user._id }, JWT_TTL);
     user.accessToken = accessToken.token;
     user.tokenExpireAt = accessToken.tokenExpireAt;
     res.cookie("access_token", user.accessToken, {
         expires: accessToken.tokenExpireAt.toDate(),
-        httpOnly: true,
-        signed: true,
-        secure: process.env.NODE_ENV === "production",
+        ...cookieOption,
     });
     return accessToken;
 };
 
-const setUserRefreshToken = (user) => {
-    const refreshToken = createToken(user._id, JWT_REFRESH_TTL);
+const setUserRefreshToken = async (user) => {
+    const refreshToken = createToken({ userId: user._id }, JWT_REFRESH_TTL);
     user.refreshToken = refreshToken.token;
     user.refreshTokenExpireAt = refreshToken.tokenExpireAt;
+    try {
+        const result = await redisClient.hset(user._id, {
+            refresh_token: refreshToken.token,
+        });
+        console.log("Redis store refresh_token success", result.toString());
+    } catch (error) {
+        console.log("Redis store refresh_token fail", error.message);
+    }
     return refreshToken;
 };
 
