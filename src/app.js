@@ -14,8 +14,10 @@ const {
     ErrorHandler,
     expressSessionConfig,
     redisClient,
+    GoogleStrategyConfig,
 } = require("./config");
 const { ResponseHelper } = require("./api/v1/helpers/response.helper.js");
+const passport = require("passport");
 
 const app = express();
 
@@ -28,7 +30,8 @@ app.use(cookieParser(COOKIE_SECRET));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(corsConfig);
 app.use(ResponseHelper);
-app.use(expressSessionConfig);
+// app.use(expressSessionConfig);
+app.use(passport.initialize());
 
 // set routes
 app.use(API_VERSION, indexRouter);
@@ -40,9 +43,9 @@ app.use(ErrorHandler);
 connectToMongoDB();
 redisClient.monitor((err, monitor) => {
     monitor.on("monitor", (time, args, source, database) =>
-        console.log(time, args, source, database)
+        console.log("redis monitor", time, args, source, database)
     );
     monitor.on("error", (channel, message) => console.log(channel, message));
-});
+}); 
 
 module.exports = app;

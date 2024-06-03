@@ -28,7 +28,7 @@ const UserSchema = new mongoose.Schema(
         password: {
             type: String,
             trim: true,
-            required: true,
+            required: false,
         },
         role: {
             type: String,
@@ -40,15 +40,17 @@ const UserSchema = new mongoose.Schema(
             type: String,
             trim: true,
             maxLength: 32,
-            unique: true,
+            unique: false,
             match: /^[a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){3,18}[a-zA-Z0-9]$/,
-            required: true,
-            index: true,
+            required: false,
+            default: null,
         },
         fullName: {
             type: String,
             trim: true,
-            maxLength: 64,
+            maxLength: 32,
+            minLength: 3,
+            required: true,
         },
         lastOnline: {
             type: Date,
@@ -60,6 +62,12 @@ const UserSchema = new mongoose.Schema(
         avatar: {
             type: String,
             trim: true,
+        },
+        authProvider: {
+            type: String,
+            enum: ["local", "google", "facebook"],
+            required: true,
+            default: "local",
         },
 
         /** Acitvation Email */
