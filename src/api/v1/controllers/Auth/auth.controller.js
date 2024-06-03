@@ -22,14 +22,13 @@ const { cookieOption, redisClient } = require("../../../../config");
 const AuthController = express.Router();
 
 AuthController.register = async (req, res) => {
-    const { email, password, fullName, username } = req.body;
+    const { email, password, fullName } = req.body;
     try {
         const hashPassword = bcrypt.hashSync(password.toString(), SALT_ROUNDS);
         const emailToken = crypto.randomBytes(64).toString("hex");
         const newUser = await User.create({
             email: email,
             fullName: fullName,
-            username: username,
             password: hashPassword,
             verificationToken: emailToken,
         });
@@ -53,7 +52,6 @@ AuthController.verifyEmail = async (req, res) => {
         await user.save();
         return res.sendSuccess({
             email: user.email,
-            username: user.username,
             verificationStatus: user.verificationStatus,
         });
     } catch (error) {
@@ -86,7 +84,6 @@ AuthController.login = async (req, res) => {
         }
         await user.save();
         const dataResponse = {
-            username: user.username,
             email: user.email,
             fullName: user.fullName,
             role: user.role,
@@ -141,7 +138,6 @@ AuthController.currentUser = async (req, res) => {
     const user = req.user;
     return res.sendSuccess({
         user: {
-            username: user.username,
             email: user.email,
             fullName: user.fullName,
             accessToken: user.accessToken,

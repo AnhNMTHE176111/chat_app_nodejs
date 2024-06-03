@@ -3,7 +3,6 @@ const {
     isSame,
     emailRule,
     requiredRule,
-    usernameRule,
     passwordRule,
     isPastDeadline,
     isDifferent,
@@ -17,27 +16,21 @@ const { JWT_SECRET } = require("../helpers/const");
 const AuthRequest = express.Router();
 
 AuthRequest.registerRequest = async (req, res, next) => {
-    const { email, password, password_confirmation, fullName, username } =
-        req.body;
+    const { email, password, password_confirmation, fullName } = req.body;
     try {
         requiredRule(email, "Email");
-        requiredRule(username, "Username");
+        requiredRule(fullName, "fullName");
         requiredRule(password, "Password");
         requiredRule(password_confirmation, "Password Confirmation");
-        // requiredRule(fullName, "Full Name");
         emailRule(email);
-        usernameRule(username);
         passwordRule(password);
         isSame(
             password,
             password_confirmation,
             "Password must be same as Password Confirmation"
         );
-        const user = await User.findOne({
-            $or: [{ email }, { username }],
-        });
+        const user = await User.findOne({ email });
         isDifferent(email, user?.email, "Email is taken.");
-        isDifferent(username, user?.username, "Username is taken.");
     } catch (error) {
         return res.sendError(error.message);
     }
@@ -175,10 +168,34 @@ AuthRequest.tokenRequest = async (req, res, next) => {
             if (err) {
                 return res.sendError(err.message);
             }
-            if(decoded.userId != req.userId) {
+            if (decoded.userId != req.userId) {
                 return res.sendError("Invalid refresh token for the user", 403);
             }
         });
+        next();
+    } catch (error) {
+        return res.sendError(error?.message);
+    }
+};
+
+AuthRequest.googleCallbackRequest = async (req, res, next) => {
+    const { name, email, picture } = req.profile;
+    try {
+        let user = await User.findOne({ email });
+        if (!user) {
+            user = await User.create({
+                email: email,
+                fullName: name,
+                avatar: picture,
+                authProvider: "google",
+                verificationToken: null,
+                verificationStatus: true,
+            });
+        }
+        if (user.authProvider == "local") {
+            return res.sendError("Email is registered.");
+        }
+        req.user = user;
         next();
     } catch (error) {
         return res.sendError(error?.message);

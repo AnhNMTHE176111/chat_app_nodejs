@@ -1,3 +1,4 @@
+const GoogleStrategyConfig = require("./GoogleStrategy.config");
 const cookieOption = require("./cookieOption.config");
 const corsConfig = require("./cors.config");
 const { redisClient, connectToMongoDB } = require("./database.config");
@@ -15,5 +16,6 @@ module.exports = {
     catchNotFound,
     ErrorHandler,
     corsConfig,
-    cookieOption
+    cookieOption,
+    GoogleStrategyConfig
 };

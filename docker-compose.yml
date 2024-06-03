@@ -43,7 +43,7 @@ services:
         networks:
             - chat_app_network
 
-    # # Jenkin Service
+    # Jenkin Service
     jenkins:
         image: jenkins/jenkins:lts
         restart: unless-stopped
@@ -61,7 +61,7 @@ services:
         networks:
             - chat_app_network
 
-    # # ElasticSearch Service
+    # ElasticSearch Service
     elasticsearch:
         image: elasticsearch:7.6.2
         restart: unless-stopped
@@ -80,7 +80,7 @@ services:
         networks:
             - chat_app_network
 
-    # # RabbitMQ Service
+    # RabbitMQ Service
     rabbitmq:
         image: rabbitmq:3-management
         restart: unless-stopped
