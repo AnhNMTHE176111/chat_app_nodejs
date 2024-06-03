@@ -1,4 +1,6 @@
 const express = require("express");
+const { JWT_SECRET } = require("../helpers/const");
+const jwt = require("jsonwebtoken");
 const AuthorizationMiddleware = express.Router();
 
 AuthorizationMiddleware.verifyJWT = (req, res, next) => {
@@ -10,7 +12,7 @@ AuthorizationMiddleware.verifyJWT = (req, res, next) => {
         if (err) {
             return res.sendError(err.message);
         }
-        req.userId = decoded.value;
+        req.userId = decoded.userId;
         next();
     });
 };

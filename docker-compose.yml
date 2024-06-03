@@ -32,6 +32,75 @@ services:
             - chat_app
               # condition: service_healthy
 
+    #Redis Service
+    redis:
+        image: redis:7.2.4
+        container_name: chat_app_redis
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "6379:6379"
+        networks:
+            - chat_app_network
+
+    # Jenkin Service
+    jenkins:
+        image: jenkins/jenkins:lts
+        restart: unless-stopped
+        container_name: chat_app_jenkins
+        ports:
+            - "8081:8080"
+        volumes:
+            - jenkins_home:/var/jenkins_home
+        networks:
+            - chat_app_network
+    ssh-agent:
+        image: jenkins/ssh-agent
+        restart: unless-stopped
+        container_name: chat_app_ssh-agent
+        networks:
+            - chat_app_network
+
+    # ElasticSearch Service
+    elasticsearch:
+        image: elasticsearch:7.6.2
+        restart: unless-stopped
+        container_name: chat_app_elasticsearch
+        environment:
+            - discovery.type=single-node
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+        volumes:
+            - esdata:/usr/share/elasticsearch/data
+        ports:
+            - 9200:9200
+        networks:
+            - chat_app_network
+
+    # RabbitMQ Service
+    rabbitmq:
+        image: rabbitmq:3-management
+        restart: unless-stopped
+        container_name: chat_app_rabbitmq
+        environment:
+            - RABBITMQ_DEFAULT_USER=tuananh
+            - RABBITMQ_DEFAULT_PASS=password123
+        ports:
+            - 5672:5672
+            - 15672:15672
+        networks:
+            - chat_app_network
+# Network
 networks:
     chat_app_network:
         driver: bridge
+
+# Volumes
+volumes:
+    jenkins_home:
+        driver: local
+    esdata:
+        driver: local
