@@ -7,7 +7,7 @@ module.exports = {
             watch: true,
             autorestart: true,
             ignore_watch: ["node_modules", "logs"],
-            instances: "max",
+            instances: 1,
             exec_mode: "fork",
         },
     ],
