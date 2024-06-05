@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
@@ -12,9 +13,7 @@ const {
     connectToMongoDB,
     catchNotFound,
     ErrorHandler,
-    expressSessionConfig,
     redisClient,
-    GoogleStrategyConfig,
 } = require("./config");
 const { ResponseHelper } = require("./api/v1/helpers/response.helper.js");
 const passport = require("passport");
