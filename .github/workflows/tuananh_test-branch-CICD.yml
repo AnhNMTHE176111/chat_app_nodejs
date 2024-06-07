@@ -46,7 +46,7 @@ jobs:
     steps:
     - name: Move to folder project
       run: |
-        cd ..
+        cd ~
         cd project/chat_app_nodejs
     - name: Pull compose from docker hub
       run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/chat_app_nodejs-chat_app:latest
