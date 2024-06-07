@@ -45,8 +45,9 @@ jobs:
     runs-on: self-hosted
     steps:
     - name: Move to folder project
-      working-directory: project/chat_app_nodejs
-      run: pwd
+      run: |
+        cd ..
+        cd project/chat_app_nodejs
     - name: Pull compose from docker hub
       run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/chat_app_nodejs-chat_app:latest
     - name: Delete old container
