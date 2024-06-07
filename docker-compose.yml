@@ -3,7 +3,10 @@ version: "3.0"
 services:
     # Node Service:
     chat_app:
-        image: benzo203/chat_app_nodejs-chat_app:latest
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        # image: benzo203/chat_app_nodejs-chat_app:latest
         container_name: chat_app
         tty: true
         restart: unless-stopped
