@@ -7,7 +7,7 @@ const authRouter = require("./auth.route");
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
-    res.json("Test CICD!!!");
+    res.json("Test CICD 1!!!");
 });
 
 router.use("/auth/google", authGoogle);
