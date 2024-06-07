@@ -19,19 +19,21 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - name: Build and push
-      run: |
-        docker-compose -f docker-compose.yml build
-        docker-compose -f docker-compose.yml push
+    - name: Build docker image
+      run: docker build -t chat_app_nodejs-chat_app .
+    - name: Publish image to docker hub
+      run: docker push chat_app_nodejs-chat_app:latest
         
   deploy:
     needs: build-and-push
     runs-on: self-hosted
     steps:
+    - name: Move to folder project
+      run: cd project/chat_app_nodejs
     - name: Pull compose from docker hub
-      run: docker-compose pull
+      run: docker push chat_app_nodejs-chat_app:latest
     - name: Delete old container
-      run: docker-compose down
+      run: docker rm -f chat_app
     - name: Run docker container
-      run: docker-compose up -d
+      run: docker-compose up -d --build
   
