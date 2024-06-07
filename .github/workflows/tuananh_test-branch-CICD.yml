@@ -48,6 +48,8 @@ jobs:
       run: |
         cd ~
         cd project/chat_app_nodejs
+    - name: Login before pull
+      run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
     - name: Pull compose from docker hub
       run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/chat_app_nodejs-chat_app:latest
     - name: Delete old container
