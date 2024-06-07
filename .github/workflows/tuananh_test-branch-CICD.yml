@@ -36,7 +36,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: chat_app_nodejs-chat_app:latest
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/chat_app_nodejs-chat_app:latest
         secrets: |
             GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
         
@@ -45,11 +45,12 @@ jobs:
     runs-on: self-hosted
     steps:
     - name: Move to folder project
-      run: cd project/chat_app_nodejs
+      working-directory: project/chat_app_nodejs
+      run: pwd
     - name: Pull compose from docker hub
-      run: docker push chat_app_nodejs-chat_app:latest
+      run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/chat_app_nodejs-chat_app:latest
     - name: Delete old container
-      run: docker rm -f chat_app
+      run: docker rm -f chat_app || true
     - name: Run docker container
       run: docker-compose up -d --build
   
