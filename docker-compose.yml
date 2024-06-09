@@ -6,13 +6,9 @@ services:
         build:
             context: ./
             dockerfile: Dockerfile
-        # image: benzo203/chat_app_nodejs-chat_app:latest
-        container_name: chat_app
+        image: benzo203/chat_app_nodejs-chat_app:latest
         tty: true
         restart: unless-stopped
-        volumes:
-            - ./:/home/app
-            - /home/app/node_modules
         networks:
             - chat_app_network
         depends_on:
@@ -46,56 +42,56 @@ services:
         networks:
             - chat_app_network
 
-    # Jenkin Service
-    jenkins:
-        image: jenkins/jenkins:lts
-        restart: unless-stopped
-        container_name: chat_app_jenkins
-        ports:
-            - "8081:8080"
-        volumes:
-            - jenkins_home:/var/jenkins_home
-        networks:
-            - chat_app_network
-    ssh-agent:
-        image: jenkins/ssh-agent
-        restart: unless-stopped
-        container_name: chat_app_ssh-agent
-        networks:
-            - chat_app_network
+    # # Jenkin Service
+    # jenkins:
+    #     image: jenkins/jenkins:lts
+    #     restart: unless-stopped
+    #     container_name: chat_app_jenkins
+    #     ports:
+    #         - "8081:8080"
+    #     volumes:
+    #         - jenkins_home:/var/jenkins_home
+    #     networks:
+    #         - chat_app_network
+    # ssh-agent:
+    #     image: jenkins/ssh-agent
+    #     restart: unless-stopped
+    #     container_name: chat_app_ssh-agent
+    #     networks:
+    #         - chat_app_network
 
-    # ElasticSearch Service
-    elasticsearch:
-        image: elasticsearch:7.6.2
-        restart: unless-stopped
-        container_name: chat_app_elasticsearch
-        environment:
-            - discovery.type=single-node
-            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-        ulimits:
-            memlock:
-                soft: -1
-                hard: -1
-        volumes:
-            - esdata:/usr/share/elasticsearch/data
-        ports:
-            - 9200:9200
-        networks:
-            - chat_app_network
+    # # ElasticSearch Service
+    # elasticsearch:
+    #     image: elasticsearch:7.6.2
+    #     restart: unless-stopped
+    #     container_name: chat_app_elasticsearch
+    #     environment:
+    #         - discovery.type=single-node
+    #         - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    #     ulimits:
+    #         memlock:
+    #             soft: -1
+    #             hard: -1
+    #     volumes:
+    #         - esdata:/usr/share/elasticsearch/data
+    #     ports:
+    #         - 9200:9200
+    #     networks:
+    #         - chat_app_network
 
-    # RabbitMQ Service
-    rabbitmq:
-        image: rabbitmq:3-management
-        restart: unless-stopped
-        container_name: chat_app_rabbitmq
-        environment:
-            - RABBITMQ_DEFAULT_USER=tuananh
-            - RABBITMQ_DEFAULT_PASS=password123
-        ports:
-            - 5672:5672
-            - 15672:15672
-        networks:
-            - chat_app_network
+    # # RabbitMQ Service
+    # rabbitmq:
+    #     image: rabbitmq:3-management
+    #     restart: unless-stopped
+    #     container_name: chat_app_rabbitmq
+    #     environment:
+    #         - RABBITMQ_DEFAULT_USER=tuananh
+    #         - RABBITMQ_DEFAULT_PASS=password123
+    #     ports:
+    #         - 5672:5672
+    #         - 15672:15672
+    #     networks:
+    #         - chat_app_network
 # Network
 networks:
     chat_app_network:

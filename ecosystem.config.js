@@ -2,16 +2,22 @@ module.exports = {
     apps: [
         {
             name: "chat-app",
-            script: "npm",
-            args: "start",
+            script: "./bin/www",
             watch: true,
             autorestart: true,
             ignore_watch: ["node_modules", "logs"],
-            instances: 1,
-            exec_mode: "fork",
+            instances: "max",
+            exec_mode: "cluster",
+            env: {
+                NODE_ENV: "development",
+            },
+            env_production: {
+                NODE_ENV: process.env.NODE_ENV || "production",
+                PM2_PUBLIC_KEY: process.env.PM2_PUBLIC_KEY,
+                PM2_SECRET_KEY: process.env.PM2_SECRET_KEY,
+            },
         },
     ],
-
     deploy: {
         production: {
             user: "SSH_USERNAME",

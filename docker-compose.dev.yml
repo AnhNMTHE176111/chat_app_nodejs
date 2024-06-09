@@ -1,0 +1,22 @@
+version: "3.0"
+
+services:
+  # Node Service:
+  chat_app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: development
+    env_file:
+      - .env.development
+    volumes:
+      - ./:/home/app
+      - /home/app/node_modules
+
+    command: npm run dev
+
+  # Nginx Service:
+  chat_app_nginx:
+    ports:
+      - "80:80"
