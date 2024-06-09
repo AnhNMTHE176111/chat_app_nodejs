@@ -24,7 +24,10 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
+    
+    - name: Create .env.production file   
+      run: echo "${{ secrets.ENV_PRODUCTION }}" > .env.production
+    
     - name: Build New Image
       run: docker-compose -f docker-compose.yml -f docker-compose.production.yml build chat_app
 
