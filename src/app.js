@@ -35,7 +35,7 @@ app.use(passport.initialize());
 // set routes
 app.use(API_VERSION, indexRouter);
 app.get('/', function (req, res, next) {
-    res.json("Hello World!");
+    res.json("Thiên lý ơi! Em có thể quay về đây không~");
 })
 // catch 404 and forward to error handler
 app.use(catchNotFound);
