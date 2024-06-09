@@ -98,8 +98,8 @@ networks:
         driver: bridge
 
 # Volumes
-volumes:
-    jenkins_home:
-        driver: local
-    esdata:
-        driver: local
+# volumes:
+#     jenkins_home:
+#         driver: local
+#     esdata:
+#         driver: local
