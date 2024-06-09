@@ -3,16 +3,16 @@ version: "3.0"
 services:
   # Node Service:
   chat_app:
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: any
-      update_config:
-        parallelism: 2
-        delay: 15s
-      labels:
-        - "com.example.description=Chat App Node.js Service"
-        - "com.docker.compose.container-number=1"
+    # deploy:
+    #   replicas: 2
+    #   restart_policy:
+    #     condition: any
+    #   update_config:
+    #     parallelism: 2
+    #     delay: 15s
+    #   labels:
+    #     - "com.example.description=Chat App Node.js Service"
+    #     - "com.docker.compose.container-number=1"
     build:
       context: ./
       dockerfile: Dockerfile
