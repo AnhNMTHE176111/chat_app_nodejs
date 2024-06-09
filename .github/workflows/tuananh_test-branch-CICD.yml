@@ -36,26 +36,19 @@ jobs:
 
   deploy:
     needs: build-and-push
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Start SSH agent
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-    - name: SSH to EC2 and execute command
-      uses: appleboy/ssh-action@v0.1.3
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.SERVER_PORT }}
-        script: |
-          cd ~/project/chat_app_nodejs
-          git pull origin tuananh_test
-          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-          docker-compose -f docker-compose.yml -f docker-compose.production.yml pull
-          docker-compose -f docker-compose.yml -f docker-compose.production.yml up -d --no-deps chat_app
+    - name: Move to Folder Project
+      run: cd ~/project/chat_app_nodejs
+    
+    - name: Pull new code
+      run: git pull origin tuananh_test
+    - name: Login to DockerHub
+      run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+    - name: Pull Image
+      run: docker-compose -f docker-compose.yml -f docker-compose.production.yml pull
+    - name: Run Docker
+      run: docker-compose -f docker-compose.yml -f docker-compose.production.yml up -d --no-deps chat_app
