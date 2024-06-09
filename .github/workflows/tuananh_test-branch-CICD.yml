@@ -49,8 +49,8 @@ jobs:
         cd ~/project/chat_app_nodejs
         git pull origin tuananh_test
         docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-        docker-compose -f docker-compose.yml -f docker-compose.production.yml pull
-        docker-compose -f docker-compose.yml -f docker-compose.production.yml up -d --no-deps chat_app
+        docker compose -f docker-compose.yml -f docker-compose.production.yml pull
+        docker compose -f docker-compose.yml -f docker-compose.production.yml up -d --no-deps chat_app
       env:
         DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
