@@ -19,13 +19,7 @@ services:
         image: nginx:1.25.4
         container_name: chat_app_nginx
         tty: true
-        restart: unless-stopped
-        ports:
-            - "8000:80"
-            - "443:443"
-        volumes:
-            - ./:/var/www
-            - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+        restart: unless-stopped 
         networks:
             - chat_app_network
         depends_on:

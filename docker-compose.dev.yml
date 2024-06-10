@@ -19,4 +19,7 @@ services:
   # Nginx Service:
   chat_app_nginx:
     ports:
-      - "80:80"
+      - "8000:80"
+    volumes:
+      - ./:/var/www 
+      - ./docker/nginx/dev.conf.d/:/etc/nginx/conf.d/

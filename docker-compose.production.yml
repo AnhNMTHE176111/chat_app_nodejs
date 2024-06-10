@@ -27,3 +27,9 @@ services:
   chat_app_nginx:
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+      - /etc/letsencrypt/live/benzo.site/fullchain.pem:/etc/ssl/certs/fullchain.pem
+      - /etc/letsencrypt/live/benzo.site/privkey.pem:/etc/ssl/private/privkey.pem
