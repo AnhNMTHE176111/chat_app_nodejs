@@ -44,8 +44,7 @@ jobs:
       - name: Pull new code and run Docker
         run: |
           echo "${{ secrets.EC2_SECRET_KEY_PEM }}" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-
+          ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             cd ~/actions-runner/
             ./run.sh &
 
@@ -56,7 +55,7 @@ jobs:
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
             docker compose -f docker-compose.yml -f docker-compose.production.yml pull
             docker compose -f docker-compose.yml -f docker-compose.production.yml up -d --no-deps chat_app
-          "
+          EOF
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
