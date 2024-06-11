@@ -3,7 +3,7 @@ const { CLIENT_URL } = require("../api/v1/helpers/const");
 
 const corsConfig = cors({
     origin: CLIENT_URL,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: [
         "Origin",
         "X-Requested-With",
@@ -19,7 +19,7 @@ const corsPreflight = cors({
         if (origin === CLIENT_URL) {
             callback(null, true);
         } else {
-            callback(new Error("Not allowed by CORS"));
+            callback(null);
         }
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
