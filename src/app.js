@@ -6,7 +6,11 @@ const logger = require("morgan");
 const { initializeApp } = require("firebase/app");
 
 const indexRouter = require("./api/v1/routes/index");
-const { API_VERSION, COOKIE_SECRET, CLIENT_URL } = require("./api/v1/helpers/const.js");
+const {
+    API_VERSION,
+    COOKIE_SECRET,
+    CLIENT_URL,
+} = require("./api/v1/helpers/const.js");
 const {
     firebaseConfig,
     corsConfig,
@@ -22,8 +26,16 @@ const passport = require("passport");
 const app = express();
 
 // config project
-app.options("*", corsPreflight)
+app.options("*", corsPreflight);
 app.use(corsConfig);
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", CLIENT_URL);
+    res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    next();
+});
 initializeApp(firebaseConfig);
 app.use(logger("dev"));
 app.use(express.json());
