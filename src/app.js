@@ -13,6 +13,7 @@ const {
     connectToMongoDB,
     catchNotFound,
     ErrorHandler,
+    corsPreflight,
     redisClient,
 } = require("./config");
 const { ResponseHelper } = require("./api/v1/helpers/response.helper.js");
@@ -21,7 +22,7 @@ const passport = require("passport");
 const app = express();
 
 // config project
-console.log("CLIENT_URL", CLIENT_URL);
+app.options("*", corsPreflight)
 app.use(corsConfig);
 initializeApp(firebaseConfig);
 app.use(logger("dev"));
