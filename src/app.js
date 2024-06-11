@@ -6,7 +6,7 @@ const logger = require("morgan");
 const { initializeApp } = require("firebase/app");
 
 const indexRouter = require("./api/v1/routes/index");
-const { API_VERSION, COOKIE_SECRET } = require("./api/v1/helpers/const.js");
+const { API_VERSION, COOKIE_SECRET, CLIENT_URL } = require("./api/v1/helpers/const.js");
 const {
     firebaseConfig,
     corsConfig,
@@ -21,6 +21,7 @@ const passport = require("passport");
 const app = express();
 
 // config project
+console.log("CLIENT_URL", CLIENT_URL);
 app.use(corsConfig);
 initializeApp(firebaseConfig);
 app.use(logger("dev"));
