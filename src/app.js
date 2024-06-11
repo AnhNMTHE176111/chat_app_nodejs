@@ -36,10 +36,10 @@ app.use(passport.initialize());
 app.use(API_VERSION, indexRouter);
 app.get("/", function (req, res, next) {
     res.json(
-        "Thiên lý ơi \
-        Em có thể ở lại đây không \
-        Biết chăng ngoài trời mưa giông \
-        Nhiều cô đơn lắm em"
+        "Thiên lý ơi\n" +
+        "Em có thể ở lại đây không\n" +
+        "Biết chăng ngoài trời mưa giông\n" +
+        "Nhiều cô đơn lắm em"
     );
 });
 // catch 404 and forward to error handler
