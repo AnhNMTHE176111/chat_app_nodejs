@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
@@ -34,9 +34,9 @@ app.use(passport.initialize());
 
 // set routes
 app.use(API_VERSION, indexRouter);
-app.get('/', function (req, res, next) {
+app.get("/", function (req, res, next) {
     res.json("Thiên lý ơi! Em có thể quay về đây không~");
-})
+});
 // catch 404 and forward to error handler
 app.use(catchNotFound);
 // error handler
@@ -48,6 +48,6 @@ redisClient.monitor((err, monitor) => {
         console.log("redis monitor", time, args, source, database)
     );
     monitor.on("error", (channel, message) => console.log(channel, message));
-}); 
+});
 
 module.exports = app;
