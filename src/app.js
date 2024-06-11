@@ -21,13 +21,13 @@ const passport = require("passport");
 const app = express();
 
 // config project
+app.use(corsConfig);
 initializeApp(firebaseConfig);
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(COOKIE_SECRET));
 app.use(express.static(path.join(__dirname, "public")));
-app.use(corsConfig);
 app.use(ResponseHelper);
 // app.use(expressSessionConfig);
 app.use(passport.initialize());
