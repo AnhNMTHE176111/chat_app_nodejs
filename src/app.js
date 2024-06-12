@@ -26,7 +26,7 @@ const passport = require("passport");
 const app = express();
 
 // config project
-// app.options("*", corsPreflight);
+app.use(corsPreflight);
 app.use(corsConfig);
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
