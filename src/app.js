@@ -24,10 +24,6 @@ const { ResponseHelper } = require("./api/v1/helpers/response.helper.js");
 const passport = require("passport");
 
 const app = express();
-
-// config project
-app.options("*", corsPreflight);
-app.use(corsConfig);
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", CLIENT_URL);
     res.header(
@@ -36,6 +32,9 @@ app.use(function (req, res, next) {
     );
     next();
 });
+// config project
+app.options("*", corsPreflight);
+app.use(corsConfig);
 initializeApp(firebaseConfig);
 app.use(logger("dev"));
 app.use(express.json());
