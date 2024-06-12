@@ -24,17 +24,17 @@ const { ResponseHelper } = require("./api/v1/helpers/response.helper.js");
 const passport = require("passport");
 
 const app = express();
-app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", CLIENT_URL);
-    res.header(
-        "Access-Control-Allow-Headers",
-        "Origin, X-Requested-With, Content-Type, Accept"
-    );
+
+// config project
+// app.options("*", corsPreflight);
+app.use(corsConfig);
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.setHeader('Access-Control-Allow-Credentials', true);
     next();
 });
-// config project
-app.options("*", corsPreflight);
-app.use(corsConfig);
 initializeApp(firebaseConfig);
 app.use(logger("dev"));
 app.use(express.json());

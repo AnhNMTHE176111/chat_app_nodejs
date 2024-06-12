@@ -19,7 +19,7 @@ const corsPreflight = cors({
         if (origin === CLIENT_URL) {
             callback(null, true);
         } else {
-            callback(null);
+            callback(new Error("Not allowed by CORS"));
         }
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -31,7 +31,6 @@ const corsPreflight = cors({
         "Authorization",
     ],
     credentials: true,
-    preflightContinue: true,
 });
 
 module.exports = { corsConfig, corsPreflight };
