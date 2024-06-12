@@ -4,6 +4,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const { initializeApp } = require("firebase/app");
+const cors = require("cors");
 
 const indexRouter = require("./api/v1/routes/index");
 const {
@@ -26,6 +27,7 @@ const passport = require("passport");
 const app = express();
 
 // config project
+app.options("*", cors());
 app.use(corsPreflight);
 app.use(corsConfig);
 app.use((req, res, next) => {
@@ -39,7 +41,7 @@ app.use((req, res, next) => {
         "Origin, X-Requested-With, Content-Type, Accept, Authorization"
     );
     res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.status(200);
+    res.sendStatus(200);
     next();
 });
 initializeApp(firebaseConfig);
