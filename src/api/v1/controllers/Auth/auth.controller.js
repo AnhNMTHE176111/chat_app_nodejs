@@ -92,6 +92,7 @@ AuthController.login = async (req, res) => {
         };
         return res.sendSuccess(dataResponse, "Login successfully!");
     } catch (error) {
+        console.log("error", error);
         return res.sendError(error?.errorResponse || error);
     }
 };
