@@ -8,6 +8,12 @@ const CLIENT_URL = process.env.CLIENT_URL;
 const COOKIE_SECRET = process.env.COOKIE_SECRET;
 const JWT_SECRET = process.env.JWT_SECRET;
 
+/** COMMON CONSTANTS */
+const SINGLE_CONVERSATION = "single";
+const GROUP_CONVERSATION = "group";
+const NOTIFICATION_ON = "on";
+const NOTIFICATION_OFF = "ff";
+
 module.exports = {
     API_VERSION,
     SALT_ROUNDS,
@@ -17,4 +23,8 @@ module.exports = {
     JWT_REFRESH_TTL,
     COOKIE_SECRET,
     JWT_SECRET,
+    SINGLE_CONVERSATION,
+    GROUP_CONVERSATION,
+    NOTIFICATION_ON,
+    NOTIFICATION_OFF,
 };

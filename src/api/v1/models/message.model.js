@@ -1,4 +1,4 @@
-const { default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
 
 const MessageSchema = new mongoose.Schema(
     {
@@ -8,7 +8,7 @@ const MessageSchema = new mongoose.Schema(
             required: true,
         },
         conversation_id: {
-            type: Schema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: "Conversation",
             required: true,
         },
@@ -31,7 +31,6 @@ const MessageSchema = new mongoose.Schema(
                 ref: "User",
             },
         ],
-        // reaction -> emoji
         reaction: [
             {
                 emoji: {
@@ -51,4 +50,4 @@ const MessageSchema = new mongoose.Schema(
 );
 
 const Message = mongoose.model("Message", MessageSchema);
-exports.module = Message;
+module.exports = Message;

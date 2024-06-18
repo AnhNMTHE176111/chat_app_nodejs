@@ -84,6 +84,7 @@ AuthController.login = async (req, res) => {
         }
         await user.save();
         const dataResponse = {
+            id: user._id,
             email: user.email,
             fullName: user.fullName,
             role: user.role,
@@ -139,8 +140,10 @@ AuthController.currentUser = async (req, res) => {
     const user = req.user;
     return res.sendSuccess({
         user: {
+            id: user._id,
             email: user.email,
             fullName: user.fullName,
+            avatar: user.avatar,
             accessToken: user.accessToken,
             tokenExpireAt: user.tokenExpireAt,
             role: user.role,
