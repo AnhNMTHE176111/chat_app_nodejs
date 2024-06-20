@@ -2,6 +2,7 @@ const express = require("express");
 const http = require("http");
 const socket = require("socket.io");
 const { CLIENT_URL } = require("../helpers/const");
+const Message = require("../models/message.model");
 
 const app = express();
 const server = http.createServer(app);
@@ -37,6 +38,24 @@ io.on("connection", (socket) => {
         socket.leave(conversationId);
     });
 
+    socket.on("read-message", async (data) => {
+        try {
+            await Message.findByIdAndUpdate(data.messageId, {
+                $addToSet: { readBy: data.userId },
+            });
+            await Message.updateMany(
+                {
+                    conversation_id: data.conversation_id,
+                    createdAt: { $lte: data.createdAt },
+                    readBy: { $nin: [data.userId] },
+                },
+                { $addToSet: { readBy: data.userId } }
+            );
+        } catch (error) {
+            console.error("Error updating messages:", error);
+        }
+    });
+
     onlineUsers.set(socket.handshake.query.id, socket.id);
     io.emit("getOnlineUsers", Array.from(onlineUsers.keys()));
 
@@ -52,5 +71,5 @@ module.exports = {
     server,
     io,
     onlineUsers,
-    getSocketId
+    getSocketId,
 };

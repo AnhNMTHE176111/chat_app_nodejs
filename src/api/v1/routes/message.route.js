@@ -11,9 +11,10 @@ messageRouter.post("/send/:conversation_id", async (req, res) => {
             sender_id: req.userId,
             conversation_id: req.params.conversation_id,
             content: content,
+            readBy: [req.userId],
         });
+
         await newMessage.populate("sender_id", "fullName avatar");
-        console.log("receiver", receiver);
         receiver.map((receiver) => {
             const receiverSocketId = getSocketId(receiver._id.toString());
             io.to(receiverSocketId).emit("new-message", { newMessage });
@@ -24,6 +25,6 @@ messageRouter.post("/send/:conversation_id", async (req, res) => {
         console.log(error);
         return res.sendError("Send message fail");
     }
-}); 
-
+});
+  
 module.exports = messageRouter;
