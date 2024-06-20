@@ -14,6 +14,17 @@ const GROUP_CONVERSATION = "group";
 const NOTIFICATION_ON = "on";
 const NOTIFICATION_OFF = "ff";
 
+/** SOCKET CONSTANT */
+const SOCKET_EVENT = {
+    READ_MESSAGE: "read-message",
+    SEND_MESSAGE: "send-message",
+    GET_ONLINE_USERS: "get-online-users",
+    SOCKET_CONNECTION: "connection",
+    SOCKET_DISCONNECT: "disconnect",
+    JOIN_ROOM: "join-room",
+    LEAVE_ROOM: "leave-room",
+};
+
 module.exports = {
     API_VERSION,
     SALT_ROUNDS,
@@ -27,4 +38,5 @@ module.exports = {
     GROUP_CONVERSATION,
     NOTIFICATION_ON,
     NOTIFICATION_OFF,
+    SOCKET_EVENT,
 };

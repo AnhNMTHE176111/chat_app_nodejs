@@ -1,7 +1,7 @@
 const express = require("express");
 const http = require("http");
 const socket = require("socket.io");
-const { CLIENT_URL } = require("../helpers/const");
+const { CLIENT_URL, SOCKET_EVENT } = require("../helpers/const");
 const Message = require("../models/message.model");
 
 const app = express();
@@ -27,18 +27,18 @@ const getSocketId = (userId) => {
 io.on("connection", (socket) => {
     console.log("a user connected", socket.id);
 
-    socket.on("join-room", (conversationId) => {
+    socket.on(SOCKET_EVENT.SOCKET_CONNECTION, (conversationId) => {
         console.log(`${socket.handshake.query.id} join room ${conversationId}`);
         socket.join(conversationId);
     });
-    socket.on("leave-room", (conversationId) => {
+    socket.on(SOCKET_EVENT.JOIN_ROOM, (conversationId) => {
         console.log(
             `${socket.handshake.query.id} leave room ${conversationId}`
         );
         socket.leave(conversationId);
     });
 
-    socket.on("read-message", async (data) => {
+    socket.on(SOCKET_EVENT.READ_MESSAGE, async (data) => {
         try {
             await Message.findByIdAndUpdate(data.messageId, {
                 $addToSet: { readBy: data.userId },
@@ -57,12 +57,12 @@ io.on("connection", (socket) => {
     });
 
     onlineUsers.set(socket.handshake.query.id, socket.id);
-    io.emit("getOnlineUsers", Array.from(onlineUsers.keys()));
+    io.emit(SOCKET_EVENT.GET_ONLINE_USERS, Array.from(onlineUsers.keys()));
 
-    socket.on("disconnect", (reason) => {
+    socket.on(SOCKET_EVENT.SOCKET_DISCONNECT, (reason) => {
         console.log(`Socket ${socket.id} disconnected due to ${reason}`);
         onlineUsers.delete(socket.handshake.query.id);
-        io.emit("getOnlineUsers", Array.from(onlineUsers.keys()));
+        io.emit(SOCKET_EVENT.GET_ONLINE_USERS, Array.from(onlineUsers.keys()));
     });
 });
 
