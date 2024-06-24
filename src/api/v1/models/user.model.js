@@ -63,6 +63,33 @@ const UserSchema = new mongoose.Schema(
             type: String,
             trim: true,
         },
+        background: {
+            type: String,
+            trim: true,
+        },
+        dateOfBirth: {
+            type: String,
+            trim: true,
+        },
+        phone: {
+            type: String,
+            match: /^([0|84])+([0-9]{9})\b$/,
+            trim: true,
+        },
+        address: {
+            type: String,
+            trim: true,
+        },
+        gender: {
+            type: String,
+            trim: true,
+            enum: ["male", "female", "other"],
+            default: "male",
+        },
+        description: {
+            type: String,
+            trim: true,
+        },
         authProvider: {
             type: String,
             enum: ["local", "google", "facebook"],
