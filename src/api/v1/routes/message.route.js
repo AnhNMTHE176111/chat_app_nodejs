@@ -5,13 +5,25 @@ const messageRouter = require("express").Router();
 
 /** POST api/v1/message/send/:conversation_id */
 messageRouter.post("/send/:conversation_id", async (req, res) => {
-    const { content, receiver } = req.body;
+    // thực hiện chức năng nếu có file thì sẽ upload file vào firebase ở đây
+    const {
+        content,
+        receiver,
+        messageType,
+        attachmentLink,
+        attachmentName,
+        attachmentSize,
+    } = req.body;
     try {
         const newMessage = await Message.create({
             sender_id: req.userId,
             conversation_id: req.params.conversation_id,
             content: content,
             readBy: [req.userId],
+            messageType: messageType,
+            attachmentLink: attachmentLink,
+            attachmentName: attachmentName,
+            attachmentSize: attachmentSize,
         });
 
         await newMessage.populate("sender_id", "fullName avatar");
@@ -26,5 +38,5 @@ messageRouter.post("/send/:conversation_id", async (req, res) => {
         return res.sendError("Send message fail");
     }
 });
-  
+
 module.exports = messageRouter;

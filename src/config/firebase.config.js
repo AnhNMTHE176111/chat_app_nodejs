@@ -1,11 +1,18 @@
+const { initializeApp } = require("firebase/app");
+const { getStorage, ref } = require("firebase/storage");
+
 const firebaseConfig = {
-    apiKey: "AIzaSyBIv_7sMiLVS_LaErpt_kFTXnuK5scq2XA",
-    authDomain: "chat-app-b6c82.firebaseapp.com",
-    projectId: "chat-app-b6c82",
-    storageBucket: "chat-app-b6c82.appspot.com",
-    messagingSenderId: "719678235755",
-    appId: "1:719678235755:web:9d318e1ba88f82c311bd2e",
-    measurementId: "G-EMWKG43C6V",
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.FIREBASE_APP_ID,
+    measurementId: process.env.FIREBASE_MEASUREMENT_ID,
 };
 
-module.exports = { firebaseConfig };
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
+const storageRef = ref(storage);
+
+module.exports = { firebaseConfig, storage, storageRef };

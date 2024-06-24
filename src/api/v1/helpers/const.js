@@ -25,6 +25,13 @@ const SOCKET_EVENT = {
     LEAVE_ROOM: "leave-room",
 };
 
+const MESSAGE_TYPE = {
+    VOICE: "voice",
+    TEXT: "text",
+    IMAGE: "image",
+    FILE: "file",
+};
+
 module.exports = {
     API_VERSION,
     SALT_ROUNDS,
@@ -39,4 +46,5 @@ module.exports = {
     NOTIFICATION_ON,
     NOTIFICATION_OFF,
     SOCKET_EVENT,
+    MESSAGE_TYPE
 };

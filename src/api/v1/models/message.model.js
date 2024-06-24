@@ -21,7 +21,15 @@ const MessageSchema = new mongoose.Schema(
             enum: ["text", "voice", "image", "file"],
             default: "text",
         },
-        attachment: {
+        attachmentLink: {
+            type: String,
+            trim: true,
+        },
+        attachmentName: {
+            type: String,
+            trim: true,
+        },
+        attachmentSize: {
             type: String,
             trim: true,
         },

@@ -11,6 +11,7 @@ const {
     catchNotFound,
     ErrorHandler,
     redisClient,
+    firebaseConfig,
 } = require("./config");
 const { ResponseHelper } = require("./api/v1/helpers/response.helper.js");
 const passport = require("passport");
