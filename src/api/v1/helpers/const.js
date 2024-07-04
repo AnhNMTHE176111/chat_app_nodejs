@@ -8,6 +8,33 @@ const CLIENT_URL = process.env.CLIENT_URL;
 const COOKIE_SECRET = process.env.COOKIE_SECRET;
 const JWT_SECRET = process.env.JWT_SECRET;
 
+/** COMMON CONSTANTS */
+const SINGLE_CONVERSATION = "single";
+const GROUP_CONVERSATION = "group";
+const NOTIFICATION_ON = "on";
+const NOTIFICATION_OFF = "ff";
+
+/** SOCKET CONSTANT */
+const SOCKET_EVENT = {
+    READ_MESSAGE: "read-message",
+    SEND_MESSAGE: "send-message",
+    REACT_MESSAGE: "react-message",
+    DELETE_MESSAGE: "delete-message",
+    DELETED_MESSAGE: "deleted-message",
+    GET_ONLINE_USERS: "get-online-users",
+    SOCKET_CONNECTION: "connection",
+    SOCKET_DISCONNECT: "disconnect",
+    JOIN_ROOM: "join-room",
+    LEAVE_ROOM: "leave-room",
+};
+
+const MESSAGE_TYPE = {
+    VOICE: "voice",
+    TEXT: "text",
+    IMAGE: "image",
+    FILE: "file",
+};
+
 module.exports = {
     API_VERSION,
     SALT_ROUNDS,
@@ -17,4 +44,10 @@ module.exports = {
     JWT_REFRESH_TTL,
     COOKIE_SECRET,
     JWT_SECRET,
+    SINGLE_CONVERSATION,
+    GROUP_CONVERSATION,
+    NOTIFICATION_ON,
+    NOTIFICATION_OFF,
+    SOCKET_EVENT,
+    MESSAGE_TYPE
 };
