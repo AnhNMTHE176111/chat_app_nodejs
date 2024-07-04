@@ -33,7 +33,17 @@ const MessageSchema = new mongoose.Schema(
             type: String,
             trim: true,
         },
+        thread: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Message"
+        },
         readBy: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
+        hiddenFor: [
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User",

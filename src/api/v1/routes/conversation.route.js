@@ -118,6 +118,34 @@ conversationRouter.get("/list", async (req, res) => {
     return res.sendSuccess(data, `Get All Conversation of User: ${userId}`);
 });
 
+/** GET api/v1/conversation/:conversation_id */
+conversationRouter.get("/:conversation_id", async (req, res) => {
+    const userId = req.userId;
+    let data = await Conversation.findById(req.params.conversation_id).populate(
+        "participants",
+        "fullName avatar"
+    );
+
+    data._doc.latestMessage = await Message.findOne({
+        conversation_id: req.params.conversation_id,
+    })
+        .sort({ createdAt: -1 })
+        .populate("sender_id", "fullName avatar");
+
+    if (data.type === SINGLE_CONVERSATION) {
+        const other = data.participants.filter(
+            (user) => !user._id.equals(userId)
+        )[0];
+        data.picture = other.avatar;
+        data.title = other.fullName;
+    }
+
+    return res.sendSuccess(
+        data,
+        `Get Conversation with conversation_id: ${userId}`
+    );
+});
+
 /** GET api/v1/conversation/:conversation_id/messages */
 conversationRouter.get("/:conversation_id/messages", async (req, res) => {
     const data = await Message.find({
@@ -125,7 +153,8 @@ conversationRouter.get("/:conversation_id/messages", async (req, res) => {
     })
         .sort({ createdAt: -1 })
         .limit(15)
-        .populate("sender_id", "fullName avatar");
+        .populate("sender_id", "fullName avatar")
+        .populate("thread", "sender_id content messageType");
     data.sort((a, b) => a.createdAt - b.createdAt);
 
     return res.sendSuccess(

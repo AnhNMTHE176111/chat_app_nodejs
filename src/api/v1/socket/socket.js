@@ -56,6 +56,54 @@ io.on("connection", (socket) => {
         }
     });
 
+    socket.on(SOCKET_EVENT.REACT_MESSAGE, async (data) => {
+        try {
+            const emoji = data.emoji;
+            let message = await Message.findById(data.messageId);
+            if (!message) {
+                return console.log(`Not found message id ${data.messageId}`);
+            }
+            let reactionIndex = message.reaction.findIndex(
+                (reaction) => reaction.emoji === emoji
+            );
+            if (reactionIndex === -1) {
+                message.reaction.push({ emoji, count: 1 });
+            } else {
+                message.reaction[reactionIndex].count++;
+            }
+            await message.save();
+        } catch (error) {
+            console.error("Error react messages:", error);
+        }
+    });
+
+    socket.on(SOCKET_EVENT.DELETE_MESSAGE, async (data) => {
+        try {
+            const { message, isMyMessage, hiddenFor, receiver } = data;
+            if (isMyMessage) {
+                await Message.findByIdAndDelete(message._id);
+                receiver.map((receiver) => {
+                    console.log('receiver', receiver);
+                    const receiverSocketId = getSocketId(
+                        receiver._id.toString()
+                    );
+                    console.log('receiverSocketId', receiverSocketId);
+                    io.to(receiverSocketId).emit(SOCKET_EVENT.DELETED_MESSAGE, {
+                        message,
+                    });
+                });
+            } else {
+                await Message.findByIdAndUpdate(message._id, {
+                    $addToSet: {
+                        hiddenFor: hiddenFor,
+                    },
+                });
+            }
+        } catch (error) {
+            console.error("Error delete message:", error);
+        }
+    });
+
     onlineUsers.set(socket.handshake.query.id, socket.id);
     io.emit(SOCKET_EVENT.GET_ONLINE_USERS, Array.from(onlineUsers.keys()));
 
