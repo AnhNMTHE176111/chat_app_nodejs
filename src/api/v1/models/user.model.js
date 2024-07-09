@@ -5,6 +5,10 @@ const friendSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     },
+    sender_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
     status: {
         type: String,
         trim: true,

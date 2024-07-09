@@ -63,6 +63,13 @@ const genderRule = (value) => {
     return true;
 };
 
+const friendStatusRule = (value) => {
+    if (!["pending", "accept", "reject"].includes(value)) {
+        throw new Error("Friend status is invalid");
+    }
+    return true;
+};
+
 const dateOfBirthRule = (value) => {
     if (!moment(value, "YYYY-MM-DD", true).isValid()) {
         throw new Error("Invalid date format");
@@ -179,4 +186,5 @@ module.exports = {
     phoneRule,
     genderRule,
     dateOfBirthRule,
+    friendStatusRule,
 };

@@ -20,6 +20,10 @@ const io = new socket.Server(server, {
  */
 const onlineUsers = new Map();
 
+const notifyFriendStatusChange = (userId) => {
+    io.emit("friendStatusChanged", userId);
+};
+
 const getSocketId = (userId) => {
     return onlineUsers.get(userId);
 };
@@ -120,4 +124,5 @@ module.exports = {
     io,
     onlineUsers,
     getSocketId,
+    notifyFriendStatusChange,,
 };

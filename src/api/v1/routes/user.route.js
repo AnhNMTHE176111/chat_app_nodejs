@@ -19,4 +19,34 @@ userRouter.put(
     UserController.changeProfileInformation
 );
 
+userRouter.get(
+    "/friends/:id",
+    UserRequest.getFriendsRequest,
+    UserController.getFriends
+);
+
+userRouter.get(
+    "/friend-requests/:id",
+    UserRequest.getFriendsRequest,
+    UserController.getFriendsRequestList
+);
+
+userRouter.put(
+    "/change-friend-status/:id",
+    UserRequest.changeFriendStatusRequest,
+    UserController.changeFriendStatus
+);
+
+userRouter.get(
+    "/find-by-email/:email",
+    UserRequest.findByEmailRequest,
+    UserController.findByEmail
+);
+
+userRouter.put(
+    "/add-friend/:id",
+    UserRequest.addFriendRequest,
+    UserController.addFriend
+);
+
 module.exports = userRouter;
