@@ -9,84 +9,21 @@ const User = require("../models/user.model");
 const Group = require("../models/group.model");
 const Message = require("../models/message.model");
 const { onlineUsers } = require("../socket/socket");
+const ConversationController = require("../controllers/conversation.controller");
 
 const conversationRouter = require("express").Router();
 
-/** POST api/v1/conversation/single */
-conversationRouter.post("/single", async (req, res) => {
-    const userId = req.userId;
-    const receiverId = req.body.receiverId;
-    try {
-        // let currentUser = await User.findById(userID);
-        let receiver = await User.findById(receiverId);
-        let conversation = await Conversation.findOne({
-            type: SINGLE_CONVERSATION,
-            participants: {
-                $all: [userId, receiverId],
-            },
-        });
+conversationRouter.post(
+    "/single",
+    ConversationController.getConversationsSingle
+);
 
-        if (conversation) {
-            return res.sendSuccess(conversation, "Conversation already exist");
-        }
-
-        conversation = await Conversation.create({
-            title: receiver.fullName,
-            picture: receiver.avatar,
-            participants: [userId, receiverId],
-        });
-        return res.sendSuccess(conversation, "Create new Conversation");
-    } catch (error) {
-        return res.sendError(error?.message);
-    }
-});
-
-/** POST api/v1/conversation/group */
-conversationRouter.post("/group", async (req, res) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    try {
-        const { participants, groupName } = req.body;
-        participants.push(req.userId);
-        const uniqueParticipants = [...new Set(participants)];
-        const conversation = await Conversation.create(
-            [
-                {
-                    title: groupName,
-                    type: GROUP_CONVERSATION,
-                    participants: uniqueParticipants,
-                },
-            ],
-            {
-                session: session,
-            }
-        );
-        const group = await Group.create(
-            [
-                {
-                    conversation: conversation[0]._id,
-                    admin: req.userId,
-                    creator_id: req.userId,
-                },
-            ],
-            {
-                session: session,
-            }
-        );
-        const data = await group[0].populate("conversation");
-        await session.commitTransaction();
-        session.endSession();
-        return res.sendSuccess(data, "Create New Group");
-    } catch (error) {
-        await session.abortTransaction();
-        session.endSession();
-        return res.sendError(error?.message);
-    }
-});
+conversationRouter.post("/group", ConversationController.getConversationsGroup);
 
 /** GET api/v1/conversation/list */
 conversationRouter.get("/list", async (req, res) => {
     const userId = req.userId;
+
     let data = await Conversation.find({
         participants: userId,
     }).populate("participants", "fullName avatar");
@@ -162,6 +99,14 @@ conversationRouter.get("/:conversation_id/messages", async (req, res) => {
         `Get all messages of conversation ${req.params.conversation_id}`
     );
 });
+conversationRouter.post(
+    "/create-single-conversation",
+    ConversationController.createSingleConversation
+);
+conversationRouter.post(
+    "/create-group-conversation",
+    ConversationController.createGroupConversation
+);
 
 /** GET api/v1/conversation/:conversation_id/medias */
 conversationRouter.get("/:conversation_id/medias", async (req, res) => {

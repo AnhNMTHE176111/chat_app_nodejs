@@ -1,4 +1,5 @@
 const moment = require("moment");
+const mongoose = require("mongoose");
 
 const isSame = (
     firstValue,
@@ -37,6 +38,51 @@ const emailRule = (email) => {
     if (!email || !regex.test(email)) {
         throw new Error(`Email is invalid`);
     }
+    return true;
+};
+
+const isObjectId = (value) => {
+    if (!mongoose.Types.ObjectId.isValid(value)) {
+        throw new Error("Invalid ObjectId");
+    }
+    return true;
+};
+
+const phoneRule = (value) => {
+    const regex = /^([0|84])+([0-9]{9})\b$/;
+    if (!value || !regex.test(value)) {
+        throw new Error("Phone is invalid");
+    }
+    return true;
+};
+
+const genderRule = (value) => {
+    if (!["male", "female", "other"].includes(value)) {
+        throw new Error("Gender is invalid");
+    }
+    return true;
+};
+
+const friendStatusRule = (value) => {
+    if (!["pending", "accept", "reject"].includes(value)) {
+        throw new Error("Friend status is invalid");
+    }
+    return true;
+};
+
+const dateOfBirthRule = (value) => {
+    if (!moment(value, "YYYY-MM-DD", true).isValid()) {
+        throw new Error("Invalid date format");
+    }
+
+    const today = moment();
+    const birthDate = moment(value, "YYYY-MM-DD");
+    const age = today.diff(birthDate, "years");
+
+    if (age < 15) {
+        throw new Error("Age must be at least 15");
+    }
+
     return true;
 };
 
@@ -136,4 +182,9 @@ module.exports = {
     minNumber,
     maxNumber,
     isDifferent,
+    isObjectId,
+    phoneRule,
+    genderRule,
+    dateOfBirthRule,
+    friendStatusRule,
 };

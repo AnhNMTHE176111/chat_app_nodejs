@@ -5,6 +5,10 @@ const friendSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     },
+    sender_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
     status: {
         type: String,
         trim: true,
@@ -60,6 +64,33 @@ const UserSchema = new mongoose.Schema(
             default: false,
         },
         avatar: {
+            type: String,
+            trim: true,
+        },
+        background: {
+            type: String,
+            trim: true,
+        },
+        dateOfBirth: {
+            type: String,
+            trim: true,
+        },
+        phone: {
+            type: String,
+            match: /^([0|84])+([0-9]{9})\b$/,
+            trim: true,
+        },
+        address: {
+            type: String,
+            trim: true,
+        },
+        gender: {
+            type: String,
+            trim: true,
+            enum: ["male", "female", "other"],
+            default: "male",
+        },
+        description: {
             type: String,
             trim: true,
         },
