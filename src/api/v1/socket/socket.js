@@ -31,6 +31,7 @@ io.on("connection", (socket) => {
         console.log(`${socket.handshake.query.id} join room ${conversationId}`);
         socket.join(conversationId);
     });
+
     socket.on(SOCKET_EVENT.JOIN_ROOM, (conversationId) => {
         console.log(
             `${socket.handshake.query.id} leave room ${conversationId}`
@@ -72,6 +73,20 @@ io.on("connection", (socket) => {
                 message.reaction[reactionIndex].count++;
             }
             await message.save();
+
+            conversation.participants.map((participant) => {
+                const participantSocketId = getSocketId(
+                    participant._id.toString()
+                );
+                if (participantSocketId != socket.id) {
+                    io.to(participantSocketId).emit(
+                        SOCKET_EVENT.REACT_MESSAGE,
+                        {
+                            message: message,
+                        }
+                    );
+                }
+            });
         } catch (error) {
             console.error("Error react messages:", error);
         }
@@ -83,11 +98,11 @@ io.on("connection", (socket) => {
             if (isMyMessage) {
                 await Message.findByIdAndDelete(message._id);
                 receiver.map((receiver) => {
-                    console.log('receiver', receiver);
+                    console.log("receiver", receiver);
                     const receiverSocketId = getSocketId(
                         receiver._id.toString()
                     );
-                    console.log('receiverSocketId', receiverSocketId);
+                    console.log("receiverSocketId", receiverSocketId);
                     io.to(receiverSocketId).emit(SOCKET_EVENT.DELETED_MESSAGE, {
                         message,
                     });
@@ -106,6 +121,78 @@ io.on("connection", (socket) => {
 
     onlineUsers.set(socket.handshake.query.id, socket.id);
     io.emit(SOCKET_EVENT.GET_ONLINE_USERS, Array.from(onlineUsers.keys()));
+
+    //   socket.on(SOCKET_EVENT.JOIN_ROOM, (conversationId) => {
+    //     console.log(`${userId} join room ${conversationId}`);
+    //     socket.join(conversationId);
+    //     socket.to(conversationId).emit(SOCKET_EVENT.PARTICIPANT_JOINED, userId);
+    //   });
+
+    //   socket.on(SOCKET_EVENT.LEAVE_ROOM, (conversationId) => {
+    //     console.log(`${userId} leave room ${conversationId}`);
+    //     socket.leave(conversationId);
+    //     socket.to(conversationId).emit(SOCKET_EVENT.PARTICIPANT_LEFT, userId);
+    //   });
+
+    //   socket.on(SOCKET_EVENT.CALL_USER, ({ offer, to }) => {
+    //     const socketId = getSocketId(to);
+    //     if (socketId) {
+    //       io.to(socketId).emit(SOCKET_EVENT.CALL_MADE, { offer, socketId: socket.id });
+    //     }
+    //   });
+
+    //   socket.on(SOCKET_EVENT.MAKE_ANSWER, ({ answer, to }) => {
+    //     const socketId = getSocketId(to);
+    //     if (socketId) {
+    //       io.to(socketId).emit(SOCKET_EVENT.ANSWER_MADE, { answer, socketId: socket.id });
+    //     }
+    //   });
+
+    //   socket.on(SOCKET_EVENT.CANDIDATE, ({ candidate, to }) => {
+    //     const socketId = getSocketId(to);
+    //     if (socketId) {
+    //       io.to(socketId).emit(SOCKET_EVENT.CANDIDATE, { candidate, socketId: socket.id });
+    //     }
+    //   });
+
+    socket.on(SOCKET_EVENT.START_CALL, ({ offer, conversation }) => {
+        conversation.participants.map((participant) => {
+            const participantSocketId = getSocketId(participant._id.toString());
+            if (participantSocketId != socket.id) {
+                io.to(participantSocketId).emit(SOCKET_EVENT.RECEIVE_CALL, {
+                    offer: offer,
+                    conversation: conversation,
+                });
+            }
+        });
+        socket.join(conversation.id);
+    });
+
+    socket.on(SOCKET_EVENT.CANDIDATE, ({ candidate, conversation }) => {
+        conversation.participants.map((participant) => {
+            const participantSocketId = getSocketId(participant._id.toString());
+            if (participantSocketId != socket.id) {
+                io.to(participantSocketId).emit(SOCKET_EVENT.CANDIDATE, {
+                    candidate: candidate,
+                    conversation: conversation,
+                });
+            }
+        });
+        socket.join(conversation.id);
+    });
+
+    socket.on(SOCKET_EVENT.MAKE_ANSWER, ({ answer, conversation }) => {
+        conversation.participants.map((participant) => {
+            const participantSocketId = getSocketId(participant._id.toString());
+            if (participantSocketId != socket.id) {
+                io.to(participantSocketId).emit(SOCKET_EVENT.ANSWER_MADE, {
+                    answer: answer,
+                    socketId: participant._id,
+                });
+            }
+        });
+        socket.join(conversation.id);
+    });
 
     socket.on(SOCKET_EVENT.SOCKET_DISCONNECT, (reason) => {
         console.log(`Socket ${socket.id} disconnected due to ${reason}`);
