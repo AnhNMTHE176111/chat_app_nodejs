@@ -24,8 +24,21 @@ const SOCKET_EVENT = {
     GET_ONLINE_USERS: "get-online-users",
     SOCKET_CONNECTION: "connection",
     SOCKET_DISCONNECT: "disconnect",
+
+    /** CALL */
     JOIN_ROOM: "join-room",
     LEAVE_ROOM: "leave-room",
+    PARTICIPANT_JOINED: "participant-joined",
+    PARTICIPANT_LEFT: "participant-left",
+    CALL_USER: "call-user",
+    CALL_MADE: "call-made",
+    MAKE_ANSWER: "make-answer",
+    ANSWER_MADE: "answer-made",
+    CANDIDATE: "candidate",
+    CALLING_OFFER: "calling-offer",
+    CALLING_DISCONNECT: "disconnect",
+    START_CALL: "start-call",
+    RECEIVE_CALL: 'receive-call'
 };
 
 const MESSAGE_TYPE = {
@@ -49,5 +62,5 @@ module.exports = {
     NOTIFICATION_ON,
     NOTIFICATION_OFF,
     SOCKET_EVENT,
-    MESSAGE_TYPE
+    MESSAGE_TYPE,
 };
