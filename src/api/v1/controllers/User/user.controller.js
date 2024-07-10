@@ -174,4 +174,20 @@ UserController.addFriend = async (req, res) => {
     }
 };
 
+UserController.getFriendById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const foundUser = await User.findById(req.userId);
+        const friend = foundUser.friends.find(
+            (friend) => friend.friend_id.toString() === id
+        );
+        if (!friend) {
+            return res.sendError(null, "Friend not found");
+        }
+        return res.sendSuccess(friend, "Get friend success");
+    } catch (error) {
+        return res.sendError(error?.message);
+    }
+};
+
 module.exports = UserController;

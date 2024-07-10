@@ -1,7 +1,7 @@
-var express = require("express");
+const express = require("express");
 const UserController = require("../controllers/User/user.controller");
 const UserRequest = require("../validations/user.validation");
-var userRouter = express.Router();
+const userRouter = express.Router();
 
 userRouter.get(
     "/profile/preview/:id",
@@ -48,5 +48,7 @@ userRouter.put(
     UserRequest.addFriendRequest,
     UserController.addFriend
 );
+
+userRouter.get("/friend/:id", UserController.getFriendById);
 
 module.exports = userRouter;

@@ -9,7 +9,7 @@ const User = require("../models/user.model");
 const Group = require("../models/group.model");
 const Message = require("../models/message.model");
 const { onlineUsers } = require("../socket/socket");
-const ConversationController = require("../controllers/User/conversation.controller");
+const ConversationController = require("../controllers/conversation.controller");
 
 const conversationRouter = require("express").Router();
 
@@ -23,6 +23,7 @@ conversationRouter.post("/group", ConversationController.getConversationsGroup);
 /** GET api/v1/conversation/list */
 conversationRouter.get("/list", async (req, res) => {
     const userId = req.userId;
+
     let data = await Conversation.find({
         participants: userId,
     }).populate("participants", "fullName avatar");

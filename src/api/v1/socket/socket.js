@@ -87,11 +87,11 @@ io.on("connection", (socket) => {
             if (isMyMessage) {
                 await Message.findByIdAndDelete(message._id);
                 receiver.map((receiver) => {
-                    console.log('receiver', receiver);
+                    console.log("receiver", receiver);
                     const receiverSocketId = getSocketId(
                         receiver._id.toString()
                     );
-                    console.log('receiverSocketId', receiverSocketId);
+                    console.log("receiverSocketId", receiverSocketId);
                     io.to(receiverSocketId).emit(SOCKET_EVENT.DELETED_MESSAGE, {
                         message,
                     });
@@ -124,5 +124,5 @@ module.exports = {
     io,
     onlineUsers,
     getSocketId,
-    notifyFriendStatusChange,,
+    notifyFriendStatusChange,
 };

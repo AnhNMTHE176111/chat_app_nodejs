@@ -1,14 +1,11 @@
 const express = require("express");
-const Conversation = require("../../models/conversation.model");
-const User = require("../../models/user.model");
-const {
-    SINGLE_CONVERSATION,
-    GROUP_CONVERSATION,
-} = require("../../helpers/const");
+const Conversation = require("../models/conversation.model");
+const User = require("../models/user.model");
+const { SINGLE_CONVERSATION, GROUP_CONVERSATION } = require("../helpers/const");
 const mongoose = require("mongoose");
-const Message = require("../../models/message.model");
-const Group = require("../../models/group.model");
-const { onlineUsers } = require("../../socket/socket");
+const Message = require("../models/message.model");
+const Group = require("../models/group.model");
+const { onlineUsers } = require("../socket/socket");
 
 const ConversationController = express.Router();
 
