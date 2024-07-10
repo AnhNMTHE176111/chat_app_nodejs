@@ -18,7 +18,7 @@ const {
     connectToMongoDB,
     catchNotFound,
     ErrorHandler,
-    redisClient,
+    // redisClient,
 } = require("./config");
 const { ResponseHelper } = require("./api/v1/helpers/response.helper.js");
 const passport = require("passport");
@@ -50,11 +50,11 @@ app.use(catchNotFound);
 app.use(ErrorHandler);
 
 connectToMongoDB();
-redisClient.monitor((err, monitor) => {
-    monitor.on("monitor", (time, args, source, database) =>
-        console.log("redis monitor", time, args, source, database)
-    );
-    monitor.on("error", (channel, message) => console.log(channel, message));
-});
+// redisClient.monitor((err, monitor) => {
+//     monitor.on("monitor", (time, args, source, database) =>
+//         console.log("redis monitor", time, args, source, database)
+//     );
+//     monitor.on("error", (channel, message) => console.log(channel, message));
+// });
 
 module.exports = app;

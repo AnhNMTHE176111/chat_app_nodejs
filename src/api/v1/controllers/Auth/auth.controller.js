@@ -80,7 +80,7 @@ AuthController.login = async (req, res) => {
     try {
         setUserAccessToken(user, res);
         if (req.body.remember_me) {
-            setUserRefreshToken(user);
+            // setUserRefreshToken(user);
         }
         await user.save();
         const dataResponse = {
