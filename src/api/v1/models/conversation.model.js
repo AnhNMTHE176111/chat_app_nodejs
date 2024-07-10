@@ -1,17 +1,23 @@
-const { default: mongoose, Schema } = require("mongoose");
+const mongoose = require("mongoose");
+const {
+    GROUP_CONVERSATION,
+    SINGLE_CONVERSATION,
+    NOTIFICATION_OFF,
+    NOTIFICATION_ON,
+} = require("../helpers/const");
+const Schema = mongoose.Schema;
 
 const ConversationSchema = new mongoose.Schema(
     {
         title: {
             type: String,
             trim: true,
-            required: true,
         },
         type: {
             type: String,
             trim: true,
-            enum: ["single", "group"],
-            required: true,
+            enum: [SINGLE_CONVERSATION, GROUP_CONVERSATION],
+            default: SINGLE_CONVERSATION,
         },
         picture: {
             type: String,
@@ -21,8 +27,8 @@ const ConversationSchema = new mongoose.Schema(
             type: {
                 status: {
                     type: String,
-                    enum: ["on", "off"],
-                    default: "on",
+                    enum: [NOTIFICATION_ON, NOTIFICATION_OFF],
+                    default: NOTIFICATION_ON,
                 },
                 duration: {
                     type: String,
@@ -35,15 +41,23 @@ const ConversationSchema = new mongoose.Schema(
                 },
             },
             default: {
-                status: "on",
+                status: NOTIFICATION_ON,
+                duration: null,
             },
-            required: true,
         },
+        participants: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "User",
+                required: true,
+            },
+        ],
     },
     {
         timestamps: true,
     }
 );
 
+ConversationSchema.path('notificationSettings').schema.set('_id', false);
 const Conversation = mongoose.model("Conversation", ConversationSchema);
 module.exports = Conversation;

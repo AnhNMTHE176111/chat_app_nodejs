@@ -4,10 +4,9 @@
  * Module dependencies.
  */
 
+const { server } = require("../src/api/v1/socket/socket");
 var app = require("../src/app");
 var debug = require("debug")("chat-app-nodejs:server");
-var http = require("http");
-const { Server } = require("socket.io");
 
 /**
  * Get port from environment and store in Express.
@@ -15,28 +14,6 @@ const { Server } = require("socket.io");
 
 var port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);
-
-/**
- * Create HTTP server.
- */
-
-var server = http.createServer(app);
-const io = new Server(server, {});
-io.on("connection", (socket) => {
-  console.log(`socket ${socket.id} connected`);
-
-  // send an event to the client
-  socket.emit("foo", "bar");
-
-  socket.on("foobar", () => {
-    // an event was received from the client
-  });
-
-  // upon disconnection
-  socket.on("disconnect", (reason) => {
-    console.log(`socket ${socket.id} disconnected due to ${reason}`);
-  });
-})
 
 /**
  * Listen on provided port, on all network interfaces.

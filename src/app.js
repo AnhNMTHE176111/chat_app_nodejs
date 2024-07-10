@@ -3,38 +3,32 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-const { initializeApp } = require("firebase/app");
-const cors = require("cors");
-
 const indexRouter = require("./api/v1/routes/index");
+const { API_VERSION, COOKIE_SECRET } = require("./api/v1/helpers/const.js");
 const {
-    API_VERSION,
-    COOKIE_SECRET,
-    CLIENT_URL,
-} = require("./api/v1/helpers/const.js");
-const {
-    firebaseConfig,
     corsConfig,
     connectToMongoDB,
     catchNotFound,
     ErrorHandler,
+<<<<<<< HEAD
     // redisClient,
+=======
+    redisClient,
+    firebaseConfig,
+>>>>>>> 5fd20ded641a58fc182ac759a9bb6ab6cadb6fd9
 } = require("./config");
 const { ResponseHelper } = require("./api/v1/helpers/response.helper.js");
 const passport = require("passport");
-
-const app = express();
+const { app, io } = require("./api/v1/socket/socket.js");
 
 // config project
-app.use(corsConfig);
-initializeApp(firebaseConfig);
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(COOKIE_SECRET));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(corsConfig);
 app.use(ResponseHelper);
-// app.use(expressSessionConfig);
 app.use(passport.initialize());
 
 // set routes

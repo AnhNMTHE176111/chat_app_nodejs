@@ -1,4 +1,4 @@
-const { default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
 
 const MessageSchema = new mongoose.Schema(
     {
@@ -8,7 +8,7 @@ const MessageSchema = new mongoose.Schema(
             required: true,
         },
         conversation_id: {
-            type: Schema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: "Conversation",
             required: true,
         },
@@ -21,9 +21,21 @@ const MessageSchema = new mongoose.Schema(
             enum: ["text", "voice", "image", "file"],
             default: "text",
         },
-        attachment: {
+        attachmentLink: {
             type: String,
             trim: true,
+        },
+        attachmentName: {
+            type: String,
+            trim: true,
+        },
+        attachmentSize: {
+            type: String,
+            trim: true,
+        },
+        thread: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Message"
         },
         readBy: [
             {
@@ -31,7 +43,12 @@ const MessageSchema = new mongoose.Schema(
                 ref: "User",
             },
         ],
-        // reaction -> emoji
+        hiddenFor: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
         reaction: [
             {
                 emoji: {
@@ -51,4 +68,4 @@ const MessageSchema = new mongoose.Schema(
 );
 
 const Message = mongoose.model("Message", MessageSchema);
-exports.module = Message;
+module.exports = Message;

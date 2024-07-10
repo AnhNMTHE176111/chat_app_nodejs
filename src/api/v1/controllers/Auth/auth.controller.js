@@ -7,16 +7,12 @@ const {
 } = require("../../helpers/const");
 const crypto = require("crypto");
 const moment = require("moment");
-const {
-    sendVerificationMail,
-} = require("../../services/sendVerificationMail.service");
+const { sendVerificationMail } = require("../../services/mail.service");
 const {
     setUserAccessToken,
     setUserRefreshToken,
 } = require("../../services/user.service");
-const {
-    sendResetPasswordTokenMail,
-} = require("../../services/sendResetPasswordTokenMail.service");
+const { sendResetPasswordTokenMail } = require("../../services/mail.service");
 const { cookieOption, redisClient } = require("../../../../config");
 
 const AuthController = express.Router();
@@ -84,6 +80,7 @@ AuthController.login = async (req, res) => {
         }
         await user.save();
         const dataResponse = {
+            id: user._id,
             email: user.email,
             fullName: user.fullName,
             role: user.role,
@@ -139,8 +136,10 @@ AuthController.currentUser = async (req, res) => {
     const user = req.user;
     return res.sendSuccess({
         user: {
+            id: user._id,
             email: user.email,
             fullName: user.fullName,
+            avatar: user.avatar,
             accessToken: user.accessToken,
             tokenExpireAt: user.tokenExpireAt,
             role: user.role,
