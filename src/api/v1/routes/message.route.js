@@ -36,7 +36,9 @@ messageRouter.post("/send/:conversation_id", async (req, res) => {
         ]);
         receiver.map((receiver) => {
             const receiverSocketId = getSocketId(receiver._id.toString());
-            io.to(receiverSocketId).emit("new-message", { newMessage });
+            receiverSocketId.forEach((item) => {
+                io.to(item).emit("new-message", { newMessage });
+            });
         });
 
         return res.sendSuccess(newMessage, "New Message", 201);

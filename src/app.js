@@ -10,12 +10,8 @@ const {
     connectToMongoDB,
     catchNotFound,
     ErrorHandler,
-<<<<<<< HEAD
-    // redisClient,
-=======
     redisClient,
     firebaseConfig,
->>>>>>> 5fd20ded641a58fc182ac759a9bb6ab6cadb6fd9
 } = require("./config");
 const { ResponseHelper } = require("./api/v1/helpers/response.helper.js");
 const passport = require("passport");
@@ -29,7 +25,7 @@ app.use(cookieParser(COOKIE_SECRET));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(corsConfig);
 app.use(ResponseHelper);
-app.use(passport.initialize());
+app.use(passport.initialize()); 
 
 // set routes
 app.use(API_VERSION, indexRouter);
