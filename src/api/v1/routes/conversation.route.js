@@ -174,4 +174,197 @@ conversationRouter.get(
     }
 );
 
+conversationRouter.post("/:conversation_id/add-friend", async (req, res) => {
+    try {
+        const friendList = req.body.friendList;
+        const data = await Conversation.findOneAndUpdate(
+            { _id: req.params.conversation_id },
+            { $push: { participants: friendList } }
+        );
+        return res.sendSuccess(data, "Add friend success");
+    } catch (error) {
+        return res.sendError(error?.message);
+    }
+});
+
+conversationRouter.get("/:conversation_id/members", async (req, res) => {
+    try {
+        const { conversation_id } = req.params;
+        if (!conversation_id) {
+            return res.sendError("Conversation id not found");
+        }
+        const conversation = await Conversation.findById(
+            conversation_id
+        ).populate("participants", "fullName avatar");
+        if (!conversation) {
+            return res.sendError("Conversation not found");
+        }
+        const foundGroup = await Group.findOne({
+            conversation: conversation_id,
+        });
+        if (!foundGroup) {
+            return res.sendError("Group not found");
+        }
+        return res.sendSuccess(
+            {
+                memberList: conversation.participants,
+                admin: foundGroup.admin,
+                conversationId: conversation_id,
+            },
+            "Get members success"
+        );
+    } catch (error) {
+        return res.sendError(error?.message);
+    }
+});
+
+conversationRouter.post(
+    "/:conversation_id/:member_id/:newRole/update-role",
+    async (req, res) => {
+        try {
+            const { conversation_id, member_id, newRole } = req.params;
+            if (!conversation_id) {
+                return res.sendError("Conversation id not found");
+            }
+            if (!member_id) {
+                return res.sendError("Member id not found");
+            }
+            if (!newRole) {
+                return res.sendError("New role not found");
+            }
+            const conversation = await Conversation.findById(conversation_id);
+            if (!conversation) {
+                return res.sendError("Conversation not found");
+            }
+            const foundGroup = await Group.findOne({
+                conversation: conversation_id,
+            });
+            if (!foundGroup) {
+                return res.sendError("Group not found");
+            }
+
+            if (!conversation.participants.includes(member_id)) {
+                return res.sendError("Member not found");
+            }
+            if (foundGroup.admin.includes(req.userId)) {
+                if (req.userId.toString() === member_id.toString()) {
+                    if (newRole === "admin") {
+                        return res.sendError("You are already admin");
+                    }
+                    if (foundGroup.admin.length > 1) {
+                        await foundGroup.updateOne({
+                            $pull: {
+                                admin: member_id,
+                            },
+                        });
+                    } else {
+                        return res.sendError(
+                            null,
+                            "You can't remove last admin"
+                        );
+                    }
+                } else {
+                    if (foundGroup.admin.includes(member_id)) {
+                        return res.sendError("You can't remove admin");
+                    }
+                    if (newRole === "admin") {
+                        await foundGroup.updateOne({
+                            $push: {
+                                admin: member_id,
+                            },
+                        });
+                    }
+                }
+            } else {
+                return res.sendError(
+                    null,
+                    "You don't have permission to update role"
+                );
+            }
+            return res.sendSuccess(null, "Update role success");
+        } catch (error) {
+            return res.sendError(error?.message);
+        }
+    }
+);
+
+conversationRouter.post("/:conversation_id/leave", async (req, res) => {
+    try {
+        const { conversation_id } = req.params;
+        if (!conversation_id) {
+            return res.sendError("Conversation id not found");
+        }
+        const foundConversation = await Conversation.findById(conversation_id);
+        if (!foundConversation) {
+            return res.sendError("Conversation not found");
+        }
+        const foundGroup = await Group.findOne({
+            conversation: conversation_id,
+        });
+        if (!foundGroup) {
+            return res.sendError("Group not found");
+        }
+        if (foundGroup.admin.toString() === req.userId.toString()) {
+            if (foundGroup.admin.length > 1) {
+                await foundGroup.updateOne({
+                    $pull: {
+                        admin: req.userId,
+                    },
+                });
+            } else {
+                return res.sendError(
+                    null,
+                    "You can't leave group with only 1 admin"
+                );
+            }
+        }
+        await foundConversation.updateOne({
+            $pull: {
+                participants: req.userId,
+            },
+        });
+        return res.sendSuccess(null, "Leave group success");
+    } catch (error) {
+        return res.sendError(error?.message);
+    }
+});
+
+conversationRouter.post(
+    "/:conversation_id/:member_id/kick",
+    async (req, res) => {
+        try {
+            const { conversation_id, member_id } = req.params;
+            if (!conversation_id) {
+                return res.sendError("Conversation id not found");
+            }
+            const foundConversation = await Conversation.findById(
+                conversation_id
+            );
+            if (!foundConversation) {
+                return res.sendError("Conversation not found");
+            }
+            const foundGroup = await Group.findOne({
+                conversation: conversation_id,
+            });
+            if (!foundGroup) {
+                return res.sendError("Group not found");
+            }
+            if (foundGroup.admin.toString() !== req.userId.toString()) {
+                return res.sendError("You are not admin");
+            }
+            if (foundGroup.admin.toString() === member_id.toString()) {
+                return res.sendError("You can't kick admin");
+            }
+            await foundConversation.updateOne({
+                $pull: {
+                    participants: member_id,
+                },
+            });
+            return res.sendSuccess(null, "Kick member success");
+        } catch (error) {
+            return res.sendError(error?.message);
+        }
+    }
+);
+
 module.exports = conversationRouter;
