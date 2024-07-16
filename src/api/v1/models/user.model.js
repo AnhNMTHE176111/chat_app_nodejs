@@ -100,6 +100,10 @@ const UserSchema = new mongoose.Schema(
             required: true,
             default: "local",
         },
+        publicInformation: {
+            type: Boolean,
+            default: false,
+        },
 
         /** Acitvation Email */
         verificationToken: String,

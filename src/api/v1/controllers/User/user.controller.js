@@ -1,11 +1,23 @@
 const express = require("express");
 const { notifyFriendStatusChange } = require("../../socket/socket");
 const User = require("../../models/user.model");
+const Conversation = require("../../models/conversation.model");
 const UserController = express.Router();
 
 UserController.getProfilePreview = async (req, res) => {
     try {
         const foundUser = req.foundUser;
+        if (foundUser.publicInformation === false) {
+            return res.sendSuccess(
+                {
+                    fullName: foundUser.fullName,
+                    avatar: foundUser.avatar,
+                    background: foundUser.background,
+                    publicInformation: foundUser.publicInformation,
+                },
+                "User is not public information"
+            );
+        }
         return res.sendSuccess(
             {
                 fullName: foundUser.fullName,
@@ -15,6 +27,7 @@ UserController.getProfilePreview = async (req, res) => {
                 description: foundUser.description,
                 avatar: foundUser.avatar,
                 background: foundUser.background,
+                publicInformation: foundUser.publicInformation,
             },
             "Get profile success"
         );
@@ -33,6 +46,7 @@ UserController.changeProfileInformation = async (req, res) => {
         avatar,
         background,
         phone,
+        publicInformation,
     } = req.body;
     try {
         const foundUser = req.foundUser;
@@ -44,6 +58,7 @@ UserController.changeProfileInformation = async (req, res) => {
         foundUser.avatar = avatar;
         foundUser.background = background;
         foundUser.phone = phone;
+        foundUser.publicInformation = publicInformation;
         await foundUser.save();
         return res.updateSuccess();
     } catch (error) {
@@ -64,6 +79,7 @@ UserController.getProfile = async (req, res) => {
                 avatar: foundUser.avatar,
                 background: foundUser.background,
                 phone: foundUser.phone,
+                publicInformation: foundUser.publicInformation,
             },
             "Get profile success"
         );
@@ -106,15 +122,75 @@ UserController.getFriendsRequestList = async (req, res) => {
     }
 };
 
-UserController.findByEmail = async (req, res) => {
+UserController.findUserByFullName = async (req, res) => {
     try {
-        const foundUser = req.foundUser;
-        const users = foundUser.map((user) => ({
-            id: user._id,
-            fullName: user.fullName,
-            avatar: user.avatar,
-        }));
-        return res.sendSuccess(users, "Get user success");
+        const foundUsers = await User.find({
+            _id: { $ne: req.userId },
+            fullName: { $regex: req.params.fullName, $options: "i" },
+        });
+        const list = [];
+        await Promise.all(
+            foundUsers.map(async (user) => {
+                var check = false;
+                if (user?.friends?.length > 0) {
+                    user?.friends?.forEach((friend) => {
+                        if (
+                            friend?.friend_id.toString() ===
+                                req.userId.toString() &&
+                            friend?.status === "accept"
+                        ) {
+                            check = true;
+                        }
+                    });
+                }
+                if (!check) {
+                    list.push({
+                        id: user._id,
+                        fullName: user.fullName,
+                        avatar: user.avatar,
+                        check: check,
+                    });
+                }
+            })
+        );
+        return res.sendSuccess(list, "Get user success");
+    } catch (error) {
+        return res.sendError(error?.message);
+    }
+};
+
+UserController.findFriendByFullName = async (req, res) => {
+    try {
+        const foundUsers = await User.find({
+            _id: { $ne: req.userId },
+            fullName: { $regex: req.params.fullName, $options: "i" },
+        });
+        const list = [];
+        await Promise.all(
+            foundUsers.map(async (user) => {
+                var check = false;
+                if (user?.friends?.length > 0) {
+                    user?.friends?.forEach((friend) => {
+                        if (
+                            friend?.friend_id.toString() ===
+                                req.userId.toString() &&
+                            friend?.status === "accept"
+                        ) {
+                            check = true;
+                        }
+                    });
+                }
+                if (check) {
+                    list.push({
+                        id: user._id,
+                        fullName: user.fullName,
+                        avatar: user.avatar,
+                        check: check,
+                    });
+                }
+            })
+        );
+        return res.sendSuccess(list, "Get user success");
     } catch (error) {
         return res.sendError(error?.message);
     }
@@ -177,14 +253,60 @@ UserController.addFriend = async (req, res) => {
 UserController.getFriendById = async (req, res) => {
     try {
         const { id } = req.params;
-        const foundUser = await User.findById(req.userId);
+        const foundUser = await User.findOne({
+            _id: req.userId,
+            "friends.friend_id": id,
+        });
+        if (!foundUser) {
+            return res.sendError(null, "Friend not found");
+        }
         const friend = foundUser.friends.find(
             (friend) => friend.friend_id.toString() === id
         );
-        if (!friend) {
-            return res.sendError(null, "Friend not found");
-        }
         return res.sendSuccess(friend, "Get friend success");
+    } catch (error) {
+        return res.sendError(error?.message);
+    }
+};
+
+UserController.getFriendsNotInGroup = async (req, res) => {
+    try {
+        const { conversation_id, fullName } = req.params;
+        const foundConversation = await Conversation.findById(conversation_id);
+        if (!foundConversation) {
+            return res.sendError(null, "Conversation not found");
+        }
+        const foundUsers = await User.find({
+            _id: { $ne: req.userId },
+            _id: { $nin: foundConversation.participants },
+            fullName: { $regex: fullName, $options: "i" },
+        });
+        const list = [];
+        await Promise.all(
+            foundUsers.map(async (user) => {
+                var check = false;
+                if (user?.friends?.length > 0) {
+                    user?.friends?.forEach((friend) => {
+                        if (
+                            friend?.friend_id.toString() ===
+                                req.userId.toString() &&
+                            friend?.status === "accept"
+                        ) {
+                            check = true;
+                        }
+                    });
+                }
+                if (check) {
+                    list.push({
+                        id: user._id,
+                        fullName: user.fullName,
+                        avatar: user.avatar,
+                        check: check,
+                    });
+                }
+            })
+        );
+        return res.sendSuccess(list, "Get user success");
     } catch (error) {
         return res.sendError(error?.message);
     }
