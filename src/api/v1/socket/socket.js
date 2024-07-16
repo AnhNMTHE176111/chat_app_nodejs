@@ -251,16 +251,12 @@ io.on("connection", (socket) => {
 
     socket.on(SOCKET_EVENT.END_CALL, ({ conversation }) => {
         conversation.participants.map((participant) => {
-            if (participant._id != socket.handshake.query.id) {
-                const participantSocketId = getSocketId(
-                    participant._id.toString()
-                );
-                participantSocketId?.forEach((item) => {
-                    io.to(item).emit(SOCKET_EVENT.END_CALL, {
-                        conversation,
-                    });
+            const participantSocketId = getSocketId(participant._id.toString());
+            participantSocketId?.forEach((item) => {
+                io.to(item).emit(SOCKET_EVENT.END_CALL, {
+                    conversation,
                 });
-            }
+            });
         });
         socket.leave(conversation.id);
     });
