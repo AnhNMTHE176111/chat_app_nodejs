@@ -38,9 +38,13 @@ userRouter.put(
 );
 
 userRouter.get(
-    "/find-by-email/:email",
-    UserRequest.findByEmailRequest,
-    UserController.findByEmail
+    "/find-by-fullName/:fullName",
+    UserController.findUserByFullName
+);
+
+userRouter.get(
+    "/find-friend-by-fullName/:fullName",
+    UserController.findFriendByFullName
 );
 
 userRouter.put(
@@ -50,5 +54,10 @@ userRouter.put(
 );
 
 userRouter.get("/friend/:id", UserController.getFriendById);
+
+userRouter.get(
+    "/friends-not-in-group/:conversation_id/:fullName",
+    UserController.getFriendsNotInGroup
+);
 
 module.exports = userRouter;
