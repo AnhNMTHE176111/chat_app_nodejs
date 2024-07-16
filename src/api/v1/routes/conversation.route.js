@@ -89,7 +89,7 @@ conversationRouter.get("/:conversation_id/messages", async (req, res) => {
         conversation_id: req.params.conversation_id,
     })
         .sort({ createdAt: -1 })
-        .limit(15)
+        .limit(20)
         .populate("sender_id", "fullName avatar")
         .populate("thread", "sender_id content messageType");
     data.sort((a, b) => a.createdAt - b.createdAt);
