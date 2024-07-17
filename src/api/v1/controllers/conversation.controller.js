@@ -115,6 +115,9 @@ ConversationController.getConversationById = async (req, res) => {
 ConversationController.createSingleConversation = async (req, res) => {
     try {
         const { participants, type } = req.body;
+        const otherUser = participants.filter(
+            (item) => item._id != req.userId
+        )[0];
         const conversations = await Conversation.findOne({
             type: type, //single
             participants: {
@@ -132,6 +135,7 @@ ConversationController.createSingleConversation = async (req, res) => {
         const createConversation = await Conversation.create({
             type: SINGLE_CONVERSATION,
             participants: participants,
+            title: otherUser.fullName,
         });
         return res.sendSuccess(
             {
