@@ -46,8 +46,8 @@ jobs:
           echo "${{ secrets.EC2_SECRET_KEY_PEM }}" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
 
-            cd ~/project/chat_app_nodejs
-            echo "${{ secrets.ENV_PRODUCTION }}" > ~/project/chat_app_nodejs/.env.production
+            cd ~/chat_app_nodejs
+            echo "${{ secrets.ENV_PRODUCTION }}" > ~/chat_app_nodejs/.env.production
 
             git pull origin tuananh_test
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
